@@ -55,6 +55,19 @@ extension ThemeExtension on BuildContext {
   /// Info color
   Color get infoColor => AppColors.info;
 
+  /// Text secondary color (muted text)
+  Color get textSecondary => isDarkMode 
+      ? Colors.grey.shade400 
+      : Colors.grey.shade600;
+
+  /// Border color
+  Color get borderColor => isDarkMode 
+      ? Colors.grey.shade700 
+      : Colors.grey.shade300;
+
+  /// Income color (alias for success)
+  Color get incomeColor => AppColors.success;
+
   // ===================================================================
   // QUICK ACCESS - TEXT STYLES
   // ===================================================================

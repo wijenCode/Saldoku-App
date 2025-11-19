@@ -6,9 +6,11 @@ class AppDateUtils {
   static String format(
     DateTime date, {
     String pattern = 'dd MMM yyyy',
-    String locale = 'id_ID',
+    String? locale,
   }) {
-    final formatter = DateFormat(pattern, locale);
+    final formatter = locale != null 
+        ? DateFormat(pattern, locale) 
+        : DateFormat(pattern);
     return formatter.format(date);
   }
 
@@ -16,9 +18,11 @@ class AppDateUtils {
   static String formatWithTime(
     DateTime date, {
     String pattern = 'dd MMM yyyy, HH:mm',
-    String locale = 'id_ID',
+    String? locale,
   }) {
-    final formatter = DateFormat(pattern, locale);
+    final formatter = locale != null 
+        ? DateFormat(pattern, locale) 
+        : DateFormat(pattern);
     return formatter.format(date);
   }
 
@@ -26,9 +30,11 @@ class AppDateUtils {
   static String formatTime(
     DateTime date, {
     String pattern = 'HH:mm',
-    String locale = 'id_ID',
+    String? locale,
   }) {
-    final formatter = DateFormat(pattern, locale);
+    final formatter = locale != null 
+        ? DateFormat(pattern, locale) 
+        : DateFormat(pattern);
     return formatter.format(date);
   }
 

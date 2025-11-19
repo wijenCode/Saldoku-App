@@ -7,7 +7,13 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/utils/currency_format.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../core/models/transaction.dart';
+import '../../../core/models/category.dart';
+import '../../../core/models/wallet.dart';
+import '../../../core/db/dao/category_dao.dart';
+import '../../../core/db/dao/wallet_dao.dart';
 import '../../profile/screen/profile_screen.dart';
+import '../../manajemen_dompet/screen/wallet_screen.dart';
 import '../data/home_repository.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,12 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
   final _authService = AuthService();
   final _notificationService = NotificationService();
   final _homeRepository = HomeRepository();
+  final _categoryDao = CategoryDao();
+  final _walletDao = WalletDao();
   
   // Data dari repository
   double _totalBalance = 0.0;
   double _monthlyIncome = 0.0;
   double _monthlyExpense = 0.0;
   int _notificationCount = 0;
+  List<Transaction> _recentTransactions = [];
+  Map<int, Category> _categoriesCache = {};
+  Map<int, Wallet> _walletsCache = {};
   bool _isLoading = true;
 
   @override
@@ -43,10 +54,27 @@ class _HomeScreenState extends State<HomeScreen> {
         final dashboardData = await _homeRepository.refreshDashboard(user.id!);
         final notifCount = await _notificationService.getNotificationCount(user.id!);
         
+        // Cache categories and wallets for display
+        final categories = await _categoryDao.getByUserId(user.id!);
+        final wallets = await _walletDao.getByUserId(user.id!);
+        
+        final categoriesMap = <int, Category>{};
+        for (var cat in categories) {
+          categoriesMap[cat.id!] = cat;
+        }
+        
+        final walletsMap = <int, Wallet>{};
+        for (var wallet in wallets) {
+          walletsMap[wallet.id!] = wallet;
+        }
+        
         setState(() {
           _totalBalance = dashboardData['balance'] as double;
           _monthlyIncome = dashboardData['monthlyIncome'] as double;
           _monthlyExpense = dashboardData['monthlyExpense'] as double;
+          _recentTransactions = dashboardData['recentTransactions'] as List<Transaction>;
+          _categoriesCache = categoriesMap;
+          _walletsCache = walletsMap;
           _notificationCount = notifCount;
           _isLoading = false;
         });
@@ -69,7 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onAddPressed() {
-    AddTransactionBottomSheet.show(context);
+    // Navigate to transactions screen
+    context.pushNamed(AppRouter.transactions);
   }
 
   @override
@@ -514,32 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentTransactions() {
-    // Sample data
-    final transactions = [
-      {
-        'category': 'Gaji',
-        'amount': 8500000.0,
-        'type': 'income',
-        'date': DateTime.now().subtract(const Duration(hours: 2)),
-        'icon': Icons.work_rounded,
-      },
-      {
-        'category': 'Makan',
-        'amount': 45000.0,
-        'type': 'expense',
-        'date': DateTime.now().subtract(const Duration(hours: 5)),
-        'icon': Icons.restaurant_rounded,
-      },
-      {
-        'category': 'Transport',
-        'amount': 30000.0,
-        'type': 'expense',
-        'date': DateTime.now().subtract(const Duration(days: 1)),
-        'icon': Icons.directions_car_rounded,
-      },
-    ];
-
-    if (transactions.isEmpty) {
+    if (_recentTransactions.isEmpty) {
       return const EmptyState(
         icon: Icons.receipt_long_outlined,
         title: 'Tidak Ada Transaksi',
@@ -548,9 +552,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      children: transactions.map((tx) {
-        final isIncome = tx['type'] == 'income';
+      children: _recentTransactions.map((transaction) {
+        final isIncome = transaction.type == 'income';
         final color = isIncome ? AppColors.success : AppColors.expense;
+        final category = _categoriesCache[transaction.categoryId];
+        final wallet = _walletsCache[transaction.walletId];
+        
+        // Get icon from category or use default
+        IconData icon;
+        if (category?.icon != null && category!.icon!.isNotEmpty) {
+          // Map string icon to IconData (simplified)
+          icon = _getIconData(category.icon!);
+        } else {
+          icon = isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+        }
         
         return CustomCard(
           margin: const EdgeInsets.only(bottom: 12),
@@ -564,7 +579,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  tx['icon'] as IconData,
+                  icon,
                   color: color,
                   size: 24,
                 ),
@@ -577,24 +592,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tx['category'] as String,
+                      category?.name ?? 'Kategori',
                       style: context.bodyBoldStyle,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      AppDateUtils.formatRelativeWithTime(tx['date'] as DateTime),
-                      style: context.labelSmallStyle.copyWith(
-                        color: context.textColor.withOpacity(0.6),
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet,
+                          size: 12,
+                          color: context.textColor.withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            wallet?.name ?? 'Dompet',
+                            style: context.labelSmallStyle.copyWith(
+                              color: context.textColor.withOpacity(0.6),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppDateUtils.formatRelativeWithTime(transaction.date),
+                          style: context.labelSmallStyle.copyWith(
+                            color: context.textColor.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
               
+              const SizedBox(width: 8),
+              
               Text(
                 CurrencyFormat.formatWithSign(
-                  tx['amount'] as double,
-                  tx['type'] as String,
+                  transaction.amount,
+                  transaction.type,
                   currency: 'IDR',
                 ),
                 style: context.titleSmallStyle.copyWith(
@@ -608,12 +646,53 @@ class _HomeScreenState extends State<HomeScreen> {
       }).toList(),
     );
   }
+  
+  IconData _getIconData(String iconName) {
+    // Map common icon names to IconData
+    switch (iconName.toLowerCase()) {
+      case 'restaurant':
+      case 'food':
+        return Icons.restaurant_rounded;
+      case 'transport':
+      case 'car':
+        return Icons.directions_car_rounded;
+      case 'shopping':
+      case 'cart':
+        return Icons.shopping_cart_rounded;
+      case 'home':
+      case 'house':
+        return Icons.home_rounded;
+      case 'health':
+      case 'medical':
+        return Icons.medical_services_rounded;
+      case 'education':
+      case 'school':
+        return Icons.school_rounded;
+      case 'entertainment':
+      case 'movie':
+        return Icons.movie_rounded;
+      case 'work':
+      case 'salary':
+        return Icons.work_rounded;
+      case 'gift':
+        return Icons.card_giftcard_rounded;
+      case 'other':
+        return Icons.more_horiz_rounded;
+      default:
+        return Icons.receipt_rounded;
+    }
+  }
 
   // Wallets Tab
   Widget _buildWalletsTab() {
-    return const Center(
-      child: Text('Dompet Screen - Coming Soon'),
-    );
+    final user = _authService.currentUser;
+    if (user == null) {
+      return const Center(
+        child: Text('User tidak ditemukan'),
+      );
+    }
+    
+    return WalletScreen(userId: user.id!);
   }
 
   // Reports Tab

@@ -18,6 +18,10 @@ import '../features/profile/screen/settings_screen.dart';
 import '../features/manajemen_dompet/screen/wallet_screen.dart';
 import '../features/anggaran/screen/budgets_screen.dart';
 import '../features/hutang_piutang/screen/debts_screen.dart';
+import '../features/manajemen_kategori/screen/category_screen.dart';
+import '../features/transaksi_harian/screen/transactions_screen.dart';
+import '../features/transfer_dompet/screen/transfer_screen.dart';
+import '../features/investasi/screen/investment_screen.dart';
 
 /// App Router untuk mengelola navigasi
 class AppRouter {
@@ -162,14 +166,42 @@ class AppRouter {
           settings: settings,
         );
 
+      // Category routes
+      case AppRouter.categories:
+        return MaterialPageRoute(
+          builder: (_) => const CategoryScreen(),
+          settings: settings,
+        );
+
+      // Transaction routes
+      case AppRouter.transactions:
+        return MaterialPageRoute(
+          builder: (_) => const TransactionsScreen(),
+          settings: settings,
+        );
+
+      // Transfer routes
+      case AppRouter.walletTransferForm:
+      case AppRouter.walletTransfers:
+        return MaterialPageRoute(
+          builder: (_) => const TransferScreen(),
+          settings: settings,
+        );
+
+      // Investment routes
+      case AppRouter.investments:
+      case AppRouter.investmentForm:
+      case AppRouter.investmentDetail:
+        return MaterialPageRoute(
+          builder: (_) => const InvestmentScreen(),
+          settings: settings,
+        );
+
       // ===== ROUTE YANG BELUM DIBUAT - COMING SOON =====
       case AppRouter.walletForm:
-      case AppRouter.walletForm:
       case AppRouter.walletDetail:
-      case AppRouter.transactions:
       case AppRouter.transactionForm:
       case AppRouter.transactionDetail:
-      case AppRouter.categories:
       case AppRouter.categoryForm:
       case AppRouter.budgetForm:
       case AppRouter.budgetDetail:
@@ -179,14 +211,9 @@ class AppRouter {
       case AppRouter.savingsGoals:
       case AppRouter.savingsGoalForm:
       case AppRouter.savingsGoalDetail:
-      case AppRouter.investments:
-      case AppRouter.investmentForm:
-      case AppRouter.investmentDetail:
       case AppRouter.debtForm:
       case AppRouter.debtDetail:
       case AppRouter.debtPaymentForm:
-      case AppRouter.walletTransferForm:
-      case AppRouter.walletTransfers:
       case AppRouter.reports:
       case AppRouter.incomeExpenseReport:
       case AppRouter.cashFlowReport:
