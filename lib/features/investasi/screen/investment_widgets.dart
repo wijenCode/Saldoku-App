@@ -12,10 +12,7 @@ import '../data/investment_repository.dart';
 class PortfolioSummaryCard extends StatelessWidget {
   final Map<String, double> statistics;
 
-  const PortfolioSummaryCard({
-    super.key,
-    required this.statistics,
-  });
+  const PortfolioSummaryCard({super.key, required this.statistics});
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +96,10 @@ class PortfolioSummaryCard extends StatelessWidget {
                             CurrencyFormat.format(totalProfit),
                             style: context.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: isProfit ? context.incomeColor : context.expenseColor,
+                              color:
+                                  isProfit
+                                      ? context.incomeColor
+                                      : context.expenseColor,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -111,15 +111,23 @@ class PortfolioSummaryCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: isProfit 
-                                ? context.incomeColor.withOpacity(0.1) 
-                                : context.expenseColor.withOpacity(0.1),
+                            color:
+                                isProfit
+                                    ? context.incomeColor.withAlpha(
+                                      (0.1 * 255).round(),
+                                    )
+                                    : context.expenseColor.withAlpha(
+                                      (0.1 * 255).round(),
+                                    ),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             '${isProfit ? '+' : ''}${profitPercentage.toStringAsFixed(1)}%',
                             style: context.textTheme.bodySmall?.copyWith(
-                              color: isProfit ? context.incomeColor : context.expenseColor,
+                              color:
+                                  isProfit
+                                      ? context.incomeColor
+                                      : context.expenseColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -141,10 +149,7 @@ class PortfolioSummaryCard extends StatelessWidget {
 class TypeDistributionCard extends StatelessWidget {
   final Map<String, double> typeDistribution;
 
-  const TypeDistributionCard({
-    super.key,
-    required this.typeDistribution,
-  });
+  const TypeDistributionCard({super.key, required this.typeDistribution});
 
   @override
   Widget build(BuildContext context) {
@@ -233,12 +238,18 @@ class InvestmentCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: InvestmentHelper.getTypeColor(context, investment.type).withOpacity(0.1),
+                  color: InvestmentHelper.getTypeColor(
+                    context,
+                    investment.type,
+                  ).withAlpha((0.1 * 255).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   InvestmentHelper.getTypeIcon(investment.type),
-                  color: InvestmentHelper.getTypeColor(context, investment.type),
+                  color: InvestmentHelper.getTypeColor(
+                    context,
+                    investment.type,
+                  ),
                   size: 20,
                 ),
               ),
@@ -347,7 +358,10 @@ class InvestmentCard extends StatelessWidget {
                 ),
               ),
               Text(
-                AppDateUtils.format(investment.purchaseDate, pattern: 'dd MMM yy'),
+                AppDateUtils.format(
+                  investment.purchaseDate,
+                  pattern: 'dd MMM yy',
+                ),
                 style: context.textTheme.bodySmall?.copyWith(
                   color: context.textSecondary,
                 ),
@@ -364,10 +378,7 @@ class InvestmentCard extends StatelessWidget {
 class InvestmentStatusBadge extends StatelessWidget {
   final String status;
 
-  const InvestmentStatusBadge({
-    super.key,
-    required this.status,
-  });
+  const InvestmentStatusBadge({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -395,7 +406,7 @@ class InvestmentStatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -488,12 +499,12 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
   final _repository = InvestmentRepository();
-  
+
   late TextEditingController _nameController;
   late TextEditingController _initialAmountController;
   late TextEditingController _currentAmountController;
   late TextEditingController _notesController;
-  
+
   String _selectedType = 'stocks';
   DateTime _purchaseDate = DateTime.now();
   DateTime? _maturityDate;
@@ -519,7 +530,7 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
       text: widget.investment?.currentAmount.toString(),
     );
     _notesController = TextEditingController(text: widget.investment?.notes);
-    
+
     if (widget.investment != null) {
       _selectedType = widget.investment!.type;
       _purchaseDate = widget.investment!.purchaseDate;
@@ -559,8 +570,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.investment == null 
-                          ? 'Tambah Investasi' 
+                      widget.investment == null
+                          ? 'Tambah Investasi'
                           : 'Edit Investasi',
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -586,17 +597,18 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _selectedType,
+                  initialValue: _selectedType,
                   decoration: const InputDecoration(
                     labelText: 'Jenis Investasi',
                     border: OutlineInputBorder(),
                   ),
-                  items: _investmentTypes.map((type) {
-                    return DropdownMenuItem(
-                      value: type['value'],
-                      child: Text(type['label']!),
-                    );
-                  }).toList(),
+                  items:
+                      _investmentTypes.map((type) {
+                        return DropdownMenuItem(
+                          value: type['value'],
+                          child: Text(type['label']!),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     if (value != null) {
                       setState(() => _selectedType = value);
@@ -647,7 +659,10 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
                       suffixIcon: Icon(Icons.calendar_today),
                     ),
                     child: Text(
-                      AppDateUtils.format(_purchaseDate, pattern: 'dd MMMM yyyy'),
+                      AppDateUtils.format(
+                        _purchaseDate,
+                        pattern: 'dd MMMM yyyy',
+                      ),
                     ),
                   ),
                 ),
@@ -658,16 +673,21 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
                     decoration: InputDecoration(
                       labelText: 'Jatuh Tempo (Opsional)',
                       border: const OutlineInputBorder(),
-                      suffixIcon: _maturityDate != null
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () => setState(() => _maturityDate = null),
-                            )
-                          : const Icon(Icons.calendar_today),
+                      suffixIcon:
+                          _maturityDate != null
+                              ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed:
+                                    () => setState(() => _maturityDate = null),
+                              )
+                              : const Icon(Icons.calendar_today),
                     ),
                     child: Text(
                       _maturityDate != null
-                          ? AppDateUtils.format(_maturityDate!, pattern: 'dd MMMM yyyy')
+                          ? AppDateUtils.format(
+                            _maturityDate!,
+                            pattern: 'dd MMMM yyyy',
+                          )
                           : 'Pilih tanggal',
                     ),
                   ),
@@ -686,8 +706,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
                     onPressed: _isLoading ? null : _handleSubmit,
                     isLoading: _isLoading,
                     child: Text(
-                      widget.investment == null 
-                          ? 'Tambah Investasi' 
+                      widget.investment == null
+                          ? 'Tambah Investasi'
                           : 'Simpan Perubahan',
                     ),
                   ),
@@ -715,7 +735,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
   Future<void> _selectMaturityDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: _maturityDate ?? DateTime.now().add(const Duration(days: 365)),
+      initialDate:
+          _maturityDate ?? DateTime.now().add(const Duration(days: 365)),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
@@ -730,7 +751,7 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await _authService.currentUser;
+      final user = _authService.currentUser;
       if (user == null) throw Exception('User not found');
 
       if (widget.investment == null) {
@@ -743,7 +764,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
           purchaseDate: _purchaseDate,
           maturityDate: _maturityDate,
           status: 'active',
-          notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+          notes:
+              _notesController.text.isNotEmpty ? _notesController.text : null,
         );
         await _repository.createInvestment(investment);
       } else {
@@ -754,7 +776,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
           currentAmount: double.parse(_currentAmountController.text),
           purchaseDate: _purchaseDate,
           maturityDate: _maturityDate,
-          notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+          notes:
+              _notesController.text.isNotEmpty ? _notesController.text : null,
         );
         await _repository.updateInvestment(updated);
       }
@@ -765,8 +788,8 @@ class _InvestmentFormSheetState extends State<InvestmentFormSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              widget.investment == null 
-                  ? 'Investasi berhasil ditambahkan' 
+              widget.investment == null
+                  ? 'Investasi berhasil ditambahkan'
                   : 'Investasi berhasil diperbarui',
             ),
             backgroundColor: context.incomeColor,
@@ -879,14 +902,20 @@ class InvestmentDetailSheet extends StatelessWidget {
               _buildInfoRow(
                 context,
                 'Tanggal Pembelian',
-                AppDateUtils.format(investment.purchaseDate, pattern: 'dd MMMM yyyy'),
+                AppDateUtils.format(
+                  investment.purchaseDate,
+                  pattern: 'dd MMMM yyyy',
+                ),
               ),
               if (investment.maturityDate != null) ...[
                 const SizedBox(height: 12),
                 _buildInfoRow(
                   context,
                   'Jatuh Tempo',
-                  AppDateUtils.format(investment.maturityDate!, pattern: 'dd MMMM yyyy'),
+                  AppDateUtils.format(
+                    investment.maturityDate!,
+                    pattern: 'dd MMMM yyyy',
+                  ),
                 ),
               ],
               if (investment.notes != null && investment.notes!.isNotEmpty) ...[
@@ -900,10 +929,7 @@ class InvestmentDetailSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  investment.notes!,
-                  style: context.textTheme.bodyMedium,
-                ),
+                Text(investment.notes!, style: context.textTheme.bodyMedium),
               ],
               const SizedBox(height: 24),
               if (investment.status == 'active') ...[
@@ -980,10 +1006,12 @@ class InvestmentDetailSheet extends StatelessWidget {
         Flexible(
           child: Text(
             value,
-            style: style ?? context.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: valueColor,
-            ),
+            style:
+                style ??
+                context.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: valueColor,
+                ),
             textAlign: TextAlign.right,
           ),
         ),
@@ -991,134 +1019,151 @@ class InvestmentDetailSheet extends StatelessWidget {
     );
   }
 
-  void _showUpdateValueDialog(BuildContext context, InvestmentRepository repository) {
+  void _showUpdateValueDialog(
+    BuildContext context,
+    InvestmentRepository repository,
+  ) {
     final controller = TextEditingController(
       text: investment.currentAmount.toString(),
     );
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Update Nilai Investasi'),
-        content: CustomTextField(
-          controller: controller,
-          label: 'Nilai Saat Ini',
-          keyboardType: TextInputType.number,
-          prefixText: 'Rp ',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Update Nilai Investasi'),
+            content: CustomTextField(
+              controller: controller,
+              label: 'Nilai Saat Ini',
+              keyboardType: TextInputType.number,
+              prefixText: 'Rp ',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Batal'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  final value = double.tryParse(controller.text);
+                  if (value != null) {
+                    await repository.updateCurrentAmount(investment.id!, value);
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      onUpdate();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text(
+                            'Nilai investasi berhasil diperbarui',
+                          ),
+                          backgroundColor: context.incomeColor,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Simpan'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () async {
-              final value = double.tryParse(controller.text);
-              if (value != null) {
-                await repository.updateCurrentAmount(investment.id!, value);
-                if (ctx.mounted) {
-                  Navigator.pop(ctx);
-                  onUpdate();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Nilai investasi berhasil diperbarui'),
-                      backgroundColor: context.incomeColor,
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Simpan'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showCloseDialog(BuildContext context, InvestmentRepository repository) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Tutup Investasi'),
-        content: const Text('Apakah investasi ini sudah terjual atau jatuh tempo?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Tutup Investasi'),
+            content: const Text(
+              'Apakah investasi ini sudah terjual atau jatuh tempo?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await repository.updateStatus(investment.id!, 'sold');
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                    onUpdate();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Investasi ditandai sebagai terjual',
+                        ),
+                        backgroundColor: context.incomeColor,
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Terjual'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  await repository.updateStatus(investment.id!, 'matured');
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                    onUpdate();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Investasi ditandai sebagai jatuh tempo',
+                        ),
+                        backgroundColor: context.incomeColor,
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Jatuh Tempo'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              await repository.updateStatus(investment.id!, 'sold');
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
-                onUpdate();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Investasi ditandai sebagai terjual'),
-                    backgroundColor: context.incomeColor,
-                  ),
-                );
-              }
-            },
-            child: const Text('Terjual'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              await repository.updateStatus(investment.id!, 'matured');
-              if (ctx.mounted) {
-                Navigator.pop(ctx);
-                onUpdate();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Investasi ditandai sebagai jatuh tempo'),
-                    backgroundColor: context.incomeColor,
-                  ),
-                );
-              }
-            },
-            child: const Text('Jatuh Tempo'),
-          ),
-        ],
-      ),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, InvestmentRepository repository) {
+  void _showDeleteDialog(
+    BuildContext context,
+    InvestmentRepository repository,
+  ) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Hapus Investasi'),
-        content: const Text(
-          'Apakah Anda yakin ingin menghapus investasi ini? '
-          'Tindakan ini tidak dapat dibatalkan.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              await repository.deleteInvestment(investment.id!);
-              if (ctx.mounted) {
-                Navigator.pop(ctx); // Close dialog
-                Navigator.pop(context); // Close detail sheet
-                onUpdate();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Investasi berhasil dihapus'),
-                    backgroundColor: context.incomeColor,
-                  ),
-                );
-              }
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.expense,
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Hapus Investasi'),
+            content: const Text(
+              'Apakah Anda yakin ingin menghapus investasi ini? '
+              'Tindakan ini tidak dapat dibatalkan.',
             ),
-            child: const Text('Hapus'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Batal'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  await repository.deleteInvestment(investment.id!);
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx); // Close dialog
+                    Navigator.pop(context); // Close detail sheet
+                    onUpdate();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Investasi berhasil dihapus'),
+                        backgroundColor: context.incomeColor,
+                      ),
+                    );
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.expense,
+                ),
+                child: const Text('Hapus'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

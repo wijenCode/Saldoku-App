@@ -24,9 +24,8 @@ class CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chipColor = color ?? AppColors.primary;
-    final backgroundColor = isSelected
-        ? chipColor
-        : chipColor.withOpacity(0.1);
+    final backgroundColor =
+        isSelected ? chipColor : chipColor.withAlpha((0.1 * 255).round());
     final textColor = isSelected ? Colors.white : chipColor;
 
     return GestureDetector(
@@ -37,7 +36,7 @@ class CategoryChip extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: chipColor.withOpacity(0.3),
+            color: chipColor.withAlpha((0.3 * 255).round()),
             width: 1,
           ),
         ),
@@ -45,11 +44,7 @@ class CategoryChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (showIcon && icon != null) ...[
-              Icon(
-                icon,
-                size: 16,
-                color: textColor,
-              ),
+              Icon(icon, size: 16, color: textColor),
               const SizedBox(width: 6),
             ],
             Text(
@@ -89,14 +84,10 @@ class CategoryIcon extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.15),
+        color: iconColor.withAlpha((0.15 * 255).round()),
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        color: iconColor,
-        size: iconSize,
-      ),
+      child: Icon(icon, color: iconColor, size: iconSize),
     );
   }
 }

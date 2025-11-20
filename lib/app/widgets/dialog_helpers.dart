@@ -18,31 +18,30 @@ class CustomBottomSheet {
       isScrollControlled: true,
       backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        height: height,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: context.textColor.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
+      builder:
+          (context) => Container(
+            height: height,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            Flexible(child: child),
-          ],
-        ),
-      ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.textColor.withAlpha((0.3 * 255).round()),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Flexible(child: child),
+              ],
+            ),
+          ),
     );
   }
 }
@@ -60,25 +59,27 @@ class CustomDialog {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: message != null ? Text(message) : null,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(cancelText),
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: message != null ? Text(message) : null,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(cancelText),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style:
+                    isDanger
+                        ? ElevatedButton.styleFrom(
+                          backgroundColor: context.expenseColor,
+                        )
+                        : null,
+                child: Text(confirmText),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: isDanger
-                ? ElevatedButton.styleFrom(
-                    backgroundColor: context.expenseColor,
-                  )
-                : null,
-            child: Text(confirmText),
-          ),
-        ],
-      ),
     );
   }
 
@@ -91,16 +92,17 @@ class CustomDialog {
   }) {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: message != null ? Text(message) : null,
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(buttonText),
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: message != null ? Text(message) : null,
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(buttonText),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -109,23 +111,24 @@ class CustomDialog {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => PopScope(
-        canPop: false,
-        child: AlertDialog(
-          content: Row(
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  message ?? 'Memproses...',
-                  style: context.bodyStyle,
-                ),
+      builder:
+          (context) => PopScope(
+            canPop: false,
+            child: AlertDialog(
+              content: Row(
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      message ?? 'Memproses...',
+                      style: context.bodyStyle,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 

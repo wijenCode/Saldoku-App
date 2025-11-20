@@ -19,7 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -55,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        
+
         // Navigate to home
         context.pushNamedAndRemoveUntil(AppRouter.home);
       } else {
@@ -74,20 +74,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.expense,
-      ),
+      SnackBar(content: Text(message), backgroundColor: AppColors.expense),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -104,9 +98,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     size: 80,
                     color: AppColors.primary,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Title
                   Text(
                     'Buat Akun Baru',
@@ -115,19 +109,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     'Daftar untuk mulai mengelola keuangan',
                     textAlign: TextAlign.center,
                     style: context.bodyStyle.copyWith(
-                      color: context.textColor.withOpacity(0.6),
+                      color: context.textColor.withAlpha((0.6 * 255).round()),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Name field
                   CustomTextField(
                     controller: _nameController,
@@ -144,9 +138,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Email field
                   CustomTextField(
                     controller: _emailController,
@@ -164,9 +158,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Password field
                   CustomTextField(
                     controller: _passwordController,
@@ -196,9 +190,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Confirm password field
                   CustomTextField(
                     controller: _confirmPasswordController,
@@ -228,9 +222,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Register button
                   CustomButton(
                     text: 'Daftar',
@@ -238,17 +232,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     isLoading: _isLoading,
                     height: 56,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Login link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Sudah punya akun? ',
-                        style: context.bodyStyle,
-                      ),
+                      Text('Sudah punya akun? ', style: context.bodyStyle),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();

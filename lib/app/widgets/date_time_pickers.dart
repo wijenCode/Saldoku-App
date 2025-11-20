@@ -58,9 +58,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: context.labelStyle.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: context.labelStyle.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
         ],
@@ -75,11 +73,12 @@ class _DatePickerFieldState extends State<DatePickerField> {
               _selectedDate != null
                   ? DateFormat('dd MMMM yyyy', 'id_ID').format(_selectedDate!)
                   : 'Pilih tanggal',
-              style: _selectedDate != null
-                  ? context.bodyStyle
-                  : context.bodyStyle.copyWith(
-                      color: context.textColor.withOpacity(0.5),
-                    ),
+              style:
+                  _selectedDate != null
+                      ? context.bodyStyle
+                      : context.bodyStyle.copyWith(
+                        color: context.textColor.withAlpha((0.5 * 255).round()),
+                      ),
             ),
           ),
         ),
@@ -138,9 +137,7 @@ class _TimePickerFieldState extends State<TimePickerField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: context.labelStyle.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: context.labelStyle.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
         ],
@@ -155,11 +152,12 @@ class _TimePickerFieldState extends State<TimePickerField> {
               _selectedTime != null
                   ? _selectedTime!.format(context)
                   : 'Pilih waktu',
-              style: _selectedTime != null
-                  ? context.bodyStyle
-                  : context.bodyStyle.copyWith(
-                      color: context.textColor.withOpacity(0.5),
-                    ),
+              style:
+                  _selectedTime != null
+                      ? context.bodyStyle
+                      : context.bodyStyle.copyWith(
+                        color: context.textColor.withAlpha((0.5 * 255).round()),
+                      ),
             ),
           ),
         ),

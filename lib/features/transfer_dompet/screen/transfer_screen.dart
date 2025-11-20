@@ -71,55 +71,56 @@ class _TransferScreenState extends State<TransferScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Batalkan Transfer'),
-        content: Text(
-          'Yakin ingin membatalkan transfer ini?\n\n'
-          'Dari: ${fromWallet?.name ?? 'Unknown'}\n'
-          'Ke: ${toWallet?.name ?? 'Unknown'}\n'
-          'Jumlah: ${CurrencyFormat.format(transfer.amount)}\n\n'
-          'Saldo kedua dompet akan dikembalikan.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final result = await _repository.deleteTransfer(transfer.id!);
-
-              if (mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result['message'])),
-                );
-
-                if (result['success']) {
-                  _loadData();
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Batalkan Transfer'),
+            content: Text(
+              'Yakin ingin membatalkan transfer ini?\n\n'
+              'Dari: ${fromWallet?.name ?? 'Unknown'}\n'
+              'Ke: ${toWallet?.name ?? 'Unknown'}\n'
+              'Jumlah: ${CurrencyFormat.format(transfer.amount)}\n\n'
+              'Saldo kedua dompet akan dikembalikan.',
             ),
-            child: const Text('Batalkan'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _repository.deleteTransfer(transfer.id!);
+
+                  if (!mounted) return;
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(result['message'])),
+                  );
+
+                  if (result['success']) {
+                    _loadData();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Batalkan'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Transfer Dompet'),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _buildTransferList(),
+      appBar: AppBar(title: const Text('Transfer Dompet')),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildTransferList(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showTransferForm,
         icon: const Icon(Icons.swap_horiz),
@@ -142,9 +143,7 @@ class _TransferScreenState extends State<TransferScreen> {
             const SizedBox(height: 16),
             Text(
               'Belum ada riwayat transfer',
-              style: context.bodyStyle.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: context.bodyStyle.copyWith(color: Colors.grey.shade600),
             ),
           ],
         ),
@@ -154,7 +153,10 @@ class _TransferScreenState extends State<TransferScreen> {
     // Group by date
     final groupedTransfers = <String, List<WalletTransfer>>{};
     for (var transfer in _transfers) {
-      final dateKey = AppDateUtils.format(transfer.date, pattern: 'dd MMM yyyy');
+      final dateKey = AppDateUtils.format(
+        transfer.date,
+        pattern: 'dd MMM yyyy',
+      );
       if (!groupedTransfers.containsKey(dateKey)) {
         groupedTransfers[dateKey] = [];
       }
@@ -181,9 +183,7 @@ class _TransferScreenState extends State<TransferScreen> {
               ),
               child: Text(
                 dateKey,
-                style: context.bodyStyle.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: context.bodyStyle.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
 
@@ -207,13 +207,10 @@ class _TransferScreenState extends State<TransferScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.info.withOpacity(0.1),
+            color: AppColors.info.withAlpha((0.1 * 255).round()),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(
-            Icons.swap_horiz,
-            color: AppColors.info,
-          ),
+          child: const Icon(Icons.swap_horiz, color: AppColors.info),
         ),
         title: Row(
           children: [
@@ -271,18 +268,14 @@ class _TransferScreenState extends State<TransferScreen> {
             if (transfer.fee > 0)
               Text(
                 'Biaya: ${CurrencyFormat.format(transfer.fee)}',
-                style: context.labelStyle.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: context.labelStyle.copyWith(color: Colors.grey.shade600),
               ),
             if (transfer.description != null &&
                 transfer.description!.isNotEmpty) ...[
               const SizedBox(height: 2),
               Text(
                 transfer.description!,
-                style: context.labelStyle.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: context.labelStyle.copyWith(color: Colors.grey.shade600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -366,7 +359,9 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
 
     if (_fromWallet!.id == _toWallet!.id) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dompet sumber dan tujuan tidak boleh sama')),
+        const SnackBar(
+          content: Text('Dompet sumber dan tujuan tidak boleh sama'),
+        ),
       );
       return;
     }
@@ -377,6 +372,8 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
     final amount = double.parse(_amountController.text);
     final fee = double.parse(_feeController.text);
 
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     final result = await widget.repository.createTransfer(
       userId: user.id!,
       fromWalletId: _fromWallet!.id!,
@@ -384,18 +381,16 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
       amount: amount,
       fee: fee,
       date: _selectedDate,
-      description: _descriptionController.text.trim().isEmpty
-          ? null
-          : _descriptionController.text.trim(),
+      description:
+          _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
     );
 
-    if (mounted) {
-      setState(() => _isLoading = false);
-      Navigator.pop(context, result['success']);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'])),
-      );
-    }
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    navigator.pop(result['success']);
+    messenger.showSnackBar(SnackBar(content: Text(result['message'])));
   }
 
   @override
@@ -421,10 +416,7 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Transfer Dompet',
-                    style: context.headlineStyle,
-                  ),
+                  Text('Transfer Dompet', style: context.headlineStyle),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close),
@@ -435,7 +427,7 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
 
               // From Wallet
               DropdownButtonFormField<Wallet>(
-                value: _fromWallet,
+                initialValue: _fromWallet,
                 decoration: InputDecoration(
                   labelText: 'Dari Dompet',
                   prefixIcon: const Icon(Icons.account_balance_wallet),
@@ -443,23 +435,24 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                items: _wallets.map((wallet) {
-                  return DropdownMenuItem(
-                    value: wallet,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(wallet.name),
-                        Text(
-                          CurrencyFormat.format(wallet.balance),
-                          style: context.labelStyle.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
+                items:
+                    _wallets.map((wallet) {
+                      return DropdownMenuItem(
+                        value: wallet,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(wallet.name),
+                            Text(
+                              CurrencyFormat.format(wallet.balance),
+                              style: context.labelStyle.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _fromWallet = value;
@@ -470,15 +463,15 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
                     }
                   });
                 },
-                validator: (value) =>
-                    value == null ? 'Pilih dompet sumber' : null,
+                validator:
+                    (value) => value == null ? 'Pilih dompet sumber' : null,
               ),
 
               const SizedBox(height: 16),
 
               // To Wallet
               DropdownButtonFormField<Wallet>(
-                value: _toWallet,
+                initialValue: _toWallet,
                 decoration: InputDecoration(
                   labelText: 'Ke Dompet',
                   prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
@@ -486,28 +479,29 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                items: availableToWallets.map((wallet) {
-                  return DropdownMenuItem(
-                    value: wallet,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(wallet.name),
-                        Text(
-                          CurrencyFormat.format(wallet.balance),
-                          style: context.labelStyle.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
+                items:
+                    availableToWallets.map((wallet) {
+                      return DropdownMenuItem(
+                        value: wallet,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(wallet.name),
+                            Text(
+                              CurrencyFormat.format(wallet.balance),
+                              style: context.labelStyle.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() => _toWallet = value);
                 },
-                validator: (value) =>
-                    value == null ? 'Pilih dompet tujuan' : null,
+                validator:
+                    (value) => value == null ? 'Pilih dompet tujuan' : null,
               ),
 
               const SizedBox(height: 16),
@@ -568,12 +562,16 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
+                    color: AppColors.info.withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                      const Icon(
+                        Icons.info_outline,
+                        color: AppColors.info,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -629,13 +627,14 @@ class _TransferFormSheetState extends State<_TransferFormSheet> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Transfer'),
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Transfer'),
                 ),
               ),
             ],

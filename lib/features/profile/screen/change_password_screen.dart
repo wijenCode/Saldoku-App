@@ -13,11 +13,11 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
-  
+
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscureOldPassword = true;
   bool _obscureNewPassword = true;
@@ -64,9 +64,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Ganti Password',
-      ),
+      appBar: CustomAppBar(title: 'Ganti Password'),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -80,25 +78,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: context.infoColor,
-                      ),
+                      Icon(Icons.info_outline, color: context.infoColor),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Password minimal 6 karakter dan kombinasikan huruf, angka untuk keamanan',
                           style: context.labelStyle.copyWith(
-                            color: context.textColor.withOpacity(0.7),
+                            color: context.textColor.withAlpha(
+                              (0.7 * 255).round(),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Old Password
                 CustomTextField(
                   controller: _oldPasswordController,
@@ -125,9 +122,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // New Password
                 CustomTextField(
                   controller: _newPasswordController,
@@ -160,9 +157,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Confirm Password
                 CustomTextField(
                   controller: _confirmPasswordController,
@@ -192,9 +189,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Save Button
                 CustomButton(
                   text: 'Simpan Password',

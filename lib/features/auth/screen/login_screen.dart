@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -59,10 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.expense,
-      ),
+      SnackBar(content: Text(message), backgroundColor: AppColors.expense),
     );
   }
 
@@ -85,9 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     size: 80,
                     color: AppColors.primary,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Title
                   Text(
                     'Selamat Datang',
@@ -96,19 +93,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   Text(
                     'Masuk ke akun Anda',
                     textAlign: TextAlign.center,
                     style: context.bodyStyle.copyWith(
-                      color: context.textColor.withOpacity(0.6),
+                      color: context.textColor.withAlpha((0.6 * 255).round()),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // Email field
                   CustomTextField(
                     controller: _emailController,
@@ -126,9 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Password field
                   CustomTextField(
                     controller: _passwordController,
@@ -158,9 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Login button
                   CustomButton(
                     text: 'Masuk',
@@ -168,17 +165,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     isLoading: _isLoading,
                     height: 56,
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Register link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Belum punya akun? ',
-                        style: context.bodyStyle,
-                      ),
+                      Text('Belum punya akun? ', style: context.bodyStyle),
                       TextButton(
                         onPressed: () {
                           context.pushNamed(AppRouter.register);

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../../../app/constants/app_colors.dart';
 import '../../../app/theme/widgets/theme_extensions.dart';
@@ -29,7 +31,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeMode = await SharedPrefsService.getThemeMode() ?? 'system';
     final currency = await SharedPrefsService.getCurrency();
     final language = await SharedPrefsService.getLanguage();
-    final notificationEnabled = await SharedPrefsService.isNotificationEnabled();
+    final notificationEnabled =
+        await SharedPrefsService.isNotificationEnabled();
     final biometricEnabled = await SharedPrefsService.isBiometricEnabled();
 
     setState(() {
@@ -43,25 +46,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _changeTheme(String? theme) async {
     if (theme == null) return;
-    
+
     await SharedPrefsService.saveThemeMode(theme);
     setState(() {
       _selectedTheme = theme;
     });
-    
+
     if (mounted) {
-      context.showSuccessSnackBar('Tema berhasil diubah. Restart aplikasi untuk melihat perubahan.');
+      context.showSuccessSnackBar(
+        'Tema berhasil diubah. Restart aplikasi untuk melihat perubahan.',
+      );
     }
   }
 
   Future<void> _changeCurrency(String? currency) async {
     if (currency == null) return;
-    
+
     await SharedPrefsService.saveCurrency(currency);
     setState(() {
       _selectedCurrency = currency;
     });
-    
+
     if (mounted) {
       context.showSuccessSnackBar('Mata uang berhasil diubah');
     }
@@ -69,12 +74,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _changeLanguage(String? language) async {
     if (language == null) return;
-    
+
     await SharedPrefsService.saveLanguage(language);
     setState(() {
       _selectedLanguage = language;
     });
-    
+
     if (mounted) {
       context.showSuccessSnackBar('Bahasa berhasil diubah');
     }
@@ -97,16 +102,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Pengaturan',
-      ),
+      appBar: CustomAppBar(title: 'Pengaturan'),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              
+
               // Appearance Section
               _buildSectionHeader('Tampilan'),
               CustomCard(
@@ -118,7 +121,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -127,25 +132,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           size: 20,
                         ),
                       ),
-                      title: Text(
-                        'Tema',
-                        style: context.bodyBoldStyle,
-                      ),
+                      title: Text('Tema', style: context.bodyBoldStyle),
                       subtitle: Text(
                         _getThemeName(_selectedTheme),
                         style: context.labelSmallStyle.copyWith(
-                          color: context.textColor.withOpacity(0.6),
+                          color: context.textColor.withAlpha(
+                            (0.6 * 255).round(),
+                          ),
                         ),
                       ),
-                      trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+                      trailing: const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                      ),
                       onTap: () => _showThemeDialog(),
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Regional Section
               _buildSectionHeader('Regional'),
               CustomCard(
@@ -157,7 +164,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.success.withOpacity(0.1),
+                          color: AppColors.success.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -166,29 +175,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           size: 20,
                         ),
                       ),
-                      title: Text(
-                        'Mata Uang',
-                        style: context.bodyBoldStyle,
-                      ),
+                      title: Text('Mata Uang', style: context.bodyBoldStyle),
                       subtitle: Text(
                         _getCurrencyName(_selectedCurrency),
                         style: context.labelSmallStyle.copyWith(
-                          color: context.textColor.withOpacity(0.6),
+                          color: context.textColor.withAlpha(
+                            (0.6 * 255).round(),
+                          ),
                         ),
                       ),
-                      trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+                      trailing: const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                      ),
                       onTap: () => _showCurrencyDialog(),
                     ),
                     Divider(
                       height: 1,
                       indent: 68,
-                      color: context.textColor.withOpacity(0.1),
+                      color: context.textColor.withAlpha((0.1 * 255).round()),
                     ),
                     ListTile(
                       leading: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.info.withOpacity(0.1),
+                          color: AppColors.info.withAlpha((0.1 * 255).round()),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -197,25 +208,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           size: 20,
                         ),
                       ),
-                      title: Text(
-                        'Bahasa',
-                        style: context.bodyBoldStyle,
-                      ),
+                      title: Text('Bahasa', style: context.bodyBoldStyle),
                       subtitle: Text(
                         _getLanguageName(_selectedLanguage),
                         style: context.labelSmallStyle.copyWith(
-                          color: context.textColor.withOpacity(0.6),
+                          color: context.textColor.withAlpha(
+                            (0.6 * 255).round(),
+                          ),
                         ),
                       ),
-                      trailing: const Icon(Icons.chevron_right_rounded, size: 20),
+                      trailing: const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 20,
+                      ),
                       onTap: () => _showLanguageDialog(),
                     ),
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Security Section
               _buildSectionHeader('Keamanan & Privasi'),
               CustomCard(
@@ -227,7 +240,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       secondary: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.warning.withOpacity(0.1),
+                          color: AppColors.warning.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -236,14 +251,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           size: 20,
                         ),
                       ),
-                      title: Text(
-                        'Notifikasi',
-                        style: context.bodyBoldStyle,
-                      ),
+                      title: Text('Notifikasi', style: context.bodyBoldStyle),
                       subtitle: Text(
                         'Aktifkan pengingat tagihan & anggaran',
                         style: context.labelSmallStyle.copyWith(
-                          color: context.textColor.withOpacity(0.6),
+                          color: context.textColor.withAlpha(
+                            (0.6 * 255).round(),
+                          ),
                         ),
                       ),
                       value: _notificationEnabled,
@@ -253,13 +267,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Divider(
                       height: 1,
                       indent: 68,
-                      color: context.textColor.withOpacity(0.1),
+                      color: context.textColor.withAlpha((0.1 * 255).round()),
                     ),
                     SwitchListTile(
                       secondary: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.expense.withOpacity(0.1),
+                          color: AppColors.expense.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -268,14 +284,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           size: 20,
                         ),
                       ),
-                      title: Text(
-                        'Biometrik',
-                        style: context.bodyBoldStyle,
-                      ),
+                      title: Text('Biometrik', style: context.bodyBoldStyle),
                       subtitle: Text(
                         'Login dengan sidik jari',
                         style: context.labelSmallStyle.copyWith(
-                          color: context.textColor.withOpacity(0.6),
+                          color: context.textColor.withAlpha(
+                            (0.6 * 255).round(),
+                          ),
                         ),
                       ),
                       value: _biometricEnabled,
@@ -285,7 +300,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
             ],
           ),
@@ -300,7 +315,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Text(
         title,
         style: context.labelStyle.copyWith(
-          color: context.textColor.withOpacity(0.6),
+          color: context.textColor.withAlpha((0.6 * 255).round()),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -310,17 +325,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showThemeDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Pilih Tema'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildThemeOption('Terang', 'light'),
-            _buildThemeOption('Gelap', 'dark'),
-            _buildThemeOption('Sistem', 'system'),
-          ],
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Pilih Tema'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildThemeOption('Terang', 'light'),
+                _buildThemeOption('Gelap', 'dark'),
+                _buildThemeOption('Sistem', 'system'),
+              ],
+            ),
+          ),
     );
   }
 
@@ -339,46 +355,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showCurrencyDialog() {
     final currencies = CurrencyFormat.getSupportedCurrencies();
-    
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Pilih Mata Uang'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: currencies.map((currency) {
-              return RadioListTile<String>(
-                title: Text(currency['name']!),
-                subtitle: Text(currency['symbol']!),
-                value: currency['code']!,
-                groupValue: _selectedCurrency,
-                onChanged: (value) {
-                  Navigator.pop(context);
-                  _changeCurrency(value);
-                },
-                activeColor: AppColors.primary,
-              );
-            }).toList(),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Pilih Mata Uang'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children:
+                    currencies.map((currency) {
+                      return RadioListTile<String>(
+                        title: Text(currency['name']!),
+                        subtitle: Text(currency['symbol']!),
+                        value: currency['code']!,
+                        groupValue: _selectedCurrency,
+                        onChanged: (value) {
+                          Navigator.pop(context);
+                          _changeCurrency(value);
+                        },
+                        activeColor: AppColors.primary,
+                      );
+                    }).toList(),
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
   void _showLanguageDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Pilih Bahasa'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildLanguageOption('Bahasa Indonesia', 'id'),
-            _buildLanguageOption('English', 'en'),
-          ],
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Pilih Bahasa'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLanguageOption('Bahasa Indonesia', 'id'),
+                _buildLanguageOption('English', 'en'),
+              ],
+            ),
+          ),
     );
   }
 

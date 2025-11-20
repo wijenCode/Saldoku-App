@@ -93,7 +93,7 @@ class _WalletScreenState extends State<WalletScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.3),
+            color: Colors.blueAccent.withAlpha((0.3 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -133,7 +133,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withAlpha((0.2 * 255).round()),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
@@ -263,7 +263,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent.withOpacity(0.1),
+                    color: Colors.blueAccent.withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -415,10 +415,13 @@ class _WalletScreenState extends State<WalletScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.createWallet(wallet, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Dompet berhasil ditambahkan')),
                 );
               } catch (e) {
@@ -441,10 +444,13 @@ class _WalletScreenState extends State<WalletScreen> {
               final updatedWallet = wallet.copyWith(name: name, type: type);
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.updateWallet(updatedWallet, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Dompet berhasil diupdate')),
                 );
               } catch (e) {
@@ -508,10 +514,13 @@ class _WalletScreenState extends State<WalletScreen> {
               TextButton(
                 onPressed: () async {
                   try {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
                     await _provider.deleteWallet(walletId, widget.userId);
+                    if (!mounted) return;
                     setState(() {});
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    messenger.showSnackBar(
                       const SnackBar(content: Text('Dompet berhasil dihapus')),
                     );
                   } catch (e) {
@@ -585,7 +594,7 @@ class _WalletFormDialogState extends State<_WalletFormDialog> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedType,
+            initialValue: _selectedType,
             decoration: InputDecoration(
               labelText: 'Tipe Dompet',
               border: OutlineInputBorder(

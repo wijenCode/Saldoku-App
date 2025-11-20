@@ -13,10 +13,11 @@ class CategoryScreen extends StatefulWidget {
   State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProviderStateMixin {
+class _CategoryScreenState extends State<CategoryScreen>
+    with SingleTickerProviderStateMixin {
   final _authService = AuthService();
   final _repository = CategoryRepository();
-  
+
   late TabController _tabController;
   List<Category> _incomeCategories = [];
   List<Category> _expenseCategories = [];
@@ -37,12 +38,15 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
 
   Future<void> _loadCategories() async {
     setState(() => _isLoading = true);
-    
+
     final user = _authService.currentUser;
     if (user != null) {
       final income = await _repository.getCategoriesByType(user.id!, 'income');
-      final expense = await _repository.getCategoriesByType(user.id!, 'expense');
-      
+      final expense = await _repository.getCategoriesByType(
+        user.id!,
+        'expense',
+      );
+
       setState(() {
         _incomeCategories = income;
         _expenseCategories = expense;
@@ -58,122 +62,154 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('Tambah Kategori ${type == 'income' ? 'Pemasukan' : 'Pengeluaran'}'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CustomTextField(
-                  controller: nameController,
-                  label: 'Nama Kategori',
-                  hint: 'Contoh: ${type == 'income' ? 'Gaji' : 'Makan'}',
-                  prefixIcon: Icon(Icons.label_outline),
-                ),
-                const SizedBox(height: 16),
-                
-                // Icon picker
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _categoryIcons.map((icon) {
-                    final isSelected = selectedIcon == icon;
-                    return GestureDetector(
-                      onTap: () => setDialogState(() => selectedIcon = icon),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSelected 
-                            ? AppColors.primary.withOpacity(0.2)
-                            : context.surfaceColor,
-                          border: Border.all(
-                            color: isSelected ? AppColors.primary : Colors.grey.shade300,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setDialogState) => AlertDialog(
+                  title: Text(
+                    'Tambah Kategori ${type == 'income' ? 'Pemasukan' : 'Pengeluaran'}',
+                  ),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomTextField(
+                          controller: nameController,
+                          label: 'Nama Kategori',
+                          hint:
+                              'Contoh: ${type == 'income' ? 'Gaji' : 'Makan'}',
+                          prefixIcon: Icon(Icons.label_outline),
                         ),
-                        child: Icon(
-                          _getIconData(icon),
-                          color: isSelected ? AppColors.primary : context.textColor,
+                        const SizedBox(height: 16),
+
+                        // Icon picker
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children:
+                              _categoryIcons.map((icon) {
+                                final isSelected = selectedIcon == icon;
+                                return GestureDetector(
+                                  onTap:
+                                      () => setDialogState(
+                                        () => selectedIcon = icon,
+                                      ),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isSelected
+                                              ? AppColors.primary.withAlpha(
+                                                (0.2 * 255).round(),
+                                              )
+                                              : context.surfaceColor,
+                                      border: Border.all(
+                                        color:
+                                            isSelected
+                                                ? AppColors.primary
+                                                : Colors.grey.shade300,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      _getIconData(icon),
+                                      color:
+                                          isSelected
+                                              ? AppColors.primary
+                                              : context.textColor,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Color picker
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _categoryColors.map((color) {
-                    final isSelected = selectedColor == color;
-                    return GestureDetector(
-                      onTap: () => setDialogState(() => selectedColor = color),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: _getColorFromHex(color),
-                          border: Border.all(
-                            color: isSelected ? Colors.black : Colors.transparent,
-                            width: 3,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
+
+                        const SizedBox(height: 16),
+
+                        // Color picker
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children:
+                              _categoryColors.map((color) {
+                                final isSelected = selectedColor == color;
+                                return GestureDetector(
+                                  onTap:
+                                      () => setDialogState(
+                                        () => selectedColor = color,
+                                      ),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: _getColorFromHex(color),
+                                      border: Border.all(
+                                        color:
+                                            isSelected
+                                                ? Colors.black
+                                                : Colors.transparent,
+                                        width: 3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child:
+                                        isSelected
+                                            ? const Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                            )
+                                            : null,
+                                  ),
+                                );
+                              }).toList(),
                         ),
-                        child: isSelected 
-                          ? const Icon(Icons.check, color: Colors.white)
-                          : null,
-                      ),
-                    );
-                  }).toList(),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Batal'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (nameController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Nama kategori harus diisi'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        final user = _authService.currentUser;
+                        if (user != null) {
+                          final navigator = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
+                          final result = await _repository.createCategory(
+                            userId: user.id!,
+                            name: nameController.text.trim(),
+                            type: type,
+                            icon: selectedIcon ?? 'label',
+                            color: selectedColor ?? '4CAF50',
+                          );
+
+                          if (!mounted) return;
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            SnackBar(content: Text(result['message'])),
+                          );
+
+                          if (result['success']) {
+                            _loadCategories();
+                          }
+                        }
+                      },
+                      child: const Text('Simpan'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (nameController.text.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Nama kategori harus diisi')),
-                  );
-                  return;
-                }
-
-                final user = _authService.currentUser;
-                if (user != null) {
-                  final result = await _repository.createCategory(
-                    userId: user.id!,
-                    name: nameController.text.trim(),
-                    type: type,
-                    icon: selectedIcon ?? 'label',
-                    color: selectedColor ?? '4CAF50',
-                  );
-
-                  if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(result['message'])),
-                    );
-                    
-                    if (result['success']) {
-                      _loadCategories();
-                    }
-                  }
-                }
-              },
-              child: const Text('Simpan'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -184,186 +220,226 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Edit Kategori'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (category.userId == 0)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setDialogState) => AlertDialog(
+                  title: const Text('Edit Kategori'),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.info_outline, color: Colors.orange.shade700),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Kategori sistem tidak dapat diedit',
-                            style: TextStyle(color: Colors.orange.shade700),
+                        if (category.userId == 0)
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.orange.shade700,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Kategori sistem tidak dapat diedit',
+                                    style: TextStyle(
+                                      color: Colors.orange.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else ...[
+                          CustomTextField(
+                            controller: nameController,
+                            label: 'Nama Kategori',
+                            prefixIcon: Icon(Icons.label_outline),
                           ),
-                        ),
+                          const SizedBox(height: 16),
+
+                          // Icon picker
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children:
+                                _categoryIcons.map((icon) {
+                                  final isSelected = selectedIcon == icon;
+                                  return GestureDetector(
+                                    onTap:
+                                        () => setDialogState(
+                                          () => selectedIcon = icon,
+                                        ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            isSelected
+                                                ? AppColors.primary.withAlpha(
+                                                  (0.2 * 255).round(),
+                                                )
+                                                : context.surfaceColor,
+                                        border: Border.all(
+                                          color:
+                                              isSelected
+                                                  ? AppColors.primary
+                                                  : Colors.grey.shade300,
+                                          width: 2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        _getIconData(icon),
+                                        color:
+                                            isSelected
+                                                ? AppColors.primary
+                                                : context.textColor,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Color picker
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children:
+                                _categoryColors.map((color) {
+                                  final isSelected = selectedColor == color;
+                                  return GestureDetector(
+                                    onTap:
+                                        () => setDialogState(
+                                          () => selectedColor = color,
+                                        ),
+                                    child: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: _getColorFromHex(color),
+                                        border: Border.all(
+                                          color:
+                                              isSelected
+                                                  ? Colors.black
+                                                  : Colors.transparent,
+                                          width: 3,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child:
+                                          isSelected
+                                              ? const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                              )
+                                              : null,
+                                    ),
+                                  );
+                                }).toList(),
+                          ),
+                        ],
                       ],
                     ),
-                  )
-                else ...[
-                  CustomTextField(
-                    controller: nameController,
-                    label: 'Nama Kategori',
-                    prefixIcon: Icon(Icons.label_outline),
                   ),
-                  const SizedBox(height: 16),
-                  
-                  // Icon picker
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _categoryIcons.map((icon) {
-                      final isSelected = selectedIcon == icon;
-                      return GestureDetector(
-                        onTap: () => setDialogState(() => selectedIcon = icon),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: isSelected 
-                              ? AppColors.primary.withOpacity(0.2)
-                              : context.surfaceColor,
-                            border: Border.all(
-                              color: isSelected ? AppColors.primary : Colors.grey.shade300,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            _getIconData(icon),
-                            color: isSelected ? AppColors.primary : context.textColor,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Color picker
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _categoryColors.map((color) {
-                      final isSelected = selectedColor == color;
-                      return GestureDetector(
-                        onTap: () => setDialogState(() => selectedColor = color),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: _getColorFromHex(color),
-                            border: Border.all(
-                              color: isSelected ? Colors.black : Colors.transparent,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: isSelected 
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ],
-            ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Batal'),
+                    ),
+                    if (category.userId != 0)
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (nameController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Nama kategori harus diisi'),
+                              ),
+                            );
+                            return;
+                          }
+
+                          final updated = category.copyWith(
+                            name: nameController.text.trim(),
+                            icon: selectedIcon,
+                            color: selectedColor,
+                          );
+
+                          final user = _authService.currentUser;
+                          if (user != null) {
+                            final navigator = Navigator.of(context);
+                            final messenger = ScaffoldMessenger.of(context);
+                            final result = await _repository.updateCategory(
+                              updated,
+                            );
+
+                            if (!mounted) return;
+                            navigator.pop();
+                            messenger.showSnackBar(
+                              SnackBar(content: Text(result['message'])),
+                            );
+
+                            if (result['success']) {
+                              _loadCategories();
+                            }
+                          }
+                        },
+                        child: const Text('Simpan'),
+                      ),
+                  ],
+                ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            if (category.userId != 0)
-              ElevatedButton(
-                onPressed: () async {
-                  if (nameController.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Nama kategori harus diisi')),
-                    );
-                    return;
-                  }
-
-                  final updated = category.copyWith(
-                    name: nameController.text.trim(),
-                    icon: selectedIcon,
-                    color: selectedColor,
-                  );
-
-                  final user = _authService.currentUser;
-                  if (user != null) {
-                    final result = await _repository.updateCategory(updated);
-
-                    if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(result['message'])),
-                      );
-                      
-                      if (result['success']) {
-                        _loadCategories();
-                      }
-                    }
-                  }
-                },
-                child: const Text('Simpan'),
-              ),
-          ],
-        ),
-      ),
     );
   }
 
   void _showDeleteConfirmation(Category category) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Kategori'),
-        content: Text(
-          category.userId == 0
-            ? 'Kategori sistem tidak dapat dihapus'
-            : 'Yakin ingin menghapus kategori "${category.name}"?\n\nTransaksi yang menggunakan kategori ini tidak akan terhapus.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          if (category.userId != 0)
-            ElevatedButton(
-              onPressed: () async {
-                final result = await _repository.deleteCategory(category.id!);
-                
-                if (mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(result['message'])),
-                  );
-                  
-                  if (result['success']) {
-                    _loadCategories();
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Hapus'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Hapus Kategori'),
+            content: Text(
+              category.userId == 0
+                  ? 'Kategori sistem tidak dapat dihapus'
+                  : 'Yakin ingin menghapus kategori "${category.name}"?\n\nTransaksi yang menggunakan kategori ini tidak akan terhapus.',
             ),
-        ],
-      ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              if (category.userId != 0)
+                ElevatedButton(
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
+                    final result = await _repository.deleteCategory(
+                      category.id!,
+                    );
+
+                    if (!mounted) return;
+                    navigator.pop();
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(result['message'])),
+                    );
+
+                    if (result['success']) {
+                      _loadCategories();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Hapus'),
+                ),
+            ],
+          ),
     );
   }
 
@@ -374,21 +450,19 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
         title: const Text('Manajemen Kategori'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Pemasukan'),
-            Tab(text: 'Pengeluaran'),
-          ],
+          tabs: const [Tab(text: 'Pemasukan'), Tab(text: 'Pengeluaran')],
         ),
       ),
-      body: _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : TabBarView(
-            controller: _tabController,
-            children: [
-              _buildCategoryList(_incomeCategories, 'income'),
-              _buildCategoryList(_expenseCategories, 'expense'),
-            ],
-          ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildCategoryList(_incomeCategories, 'income'),
+                  _buildCategoryList(_expenseCategories, 'expense'),
+                ],
+              ),
     );
   }
 
@@ -406,9 +480,7 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
             const SizedBox(height: 16),
             Text(
               'Belum ada kategori ${type == 'income' ? 'pemasukan' : 'pengeluaran'}',
-              style: context.bodyStyle.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: context.bodyStyle.copyWith(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -446,7 +518,7 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
           ...systemCategories.map((category) => _buildCategoryItem(category)),
           const SizedBox(height: 24),
         ],
-        
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -471,7 +543,7 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
           ],
         ),
         const SizedBox(height: 12),
-        
+
         if (customCategories.isEmpty)
           Container(
             padding: const EdgeInsets.all(16),
@@ -483,9 +555,7 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
             child: Center(
               child: Text(
                 'Belum ada kategori kustom',
-                style: context.bodyStyle.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: context.bodyStyle.copyWith(color: Colors.grey.shade600),
               ),
             ),
           )
@@ -506,22 +576,18 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withAlpha((0.2 * 255).round()),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color),
         ),
         title: Text(
           category.name,
-          style: context.bodyStyle.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: context.bodyStyle.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           isSystem ? 'Kategori sistem' : 'Kategori kustom',
-          style: context.labelStyle.copyWith(
-            color: Colors.grey.shade600,
-          ),
+          style: context.labelStyle.copyWith(color: Colors.grey.shade600),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -556,43 +622,52 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
                     break;
                 }
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit_outlined, size: 20),
-                      SizedBox(width: 12),
-                      Text('Edit'),
-                    ],
-                  ),
-                ),
-                if (!isSystem)
-                  PopupMenuItem(
-                    value: 'toggle',
-                    child: Row(
-                      children: [
-                        Icon(
-                          category.isActive ? Icons.visibility_off : Icons.visibility,
-                          size: 20,
+              itemBuilder:
+                  (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit_outlined, size: 20),
+                          SizedBox(width: 12),
+                          Text('Edit'),
+                        ],
+                      ),
+                    ),
+                    if (!isSystem)
+                      PopupMenuItem(
+                        value: 'toggle',
+                        child: Row(
+                          children: [
+                            Icon(
+                              category.isActive
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              category.isActive ? 'Nonaktifkan' : 'Aktifkan',
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Text(category.isActive ? 'Nonaktifkan' : 'Aktifkan'),
-                      ],
-                    ),
-                  ),
-                if (!isSystem)
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                        SizedBox(width: 12),
-                        Text('Hapus', style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-              ],
+                      ),
+                    if (!isSystem)
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: Colors.red,
+                            ),
+                            SizedBox(width: 12),
+                            Text('Hapus', style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
+                      ),
+                  ],
             ),
           ],
         ),
@@ -601,16 +676,14 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
   }
 
   Future<void> _toggleCategoryStatus(Category category) async {
+    final messenger = ScaffoldMessenger.of(context);
     final result = await _repository.toggleCategoryStatus(category);
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'])),
-      );
-      
-      if (result['success']) {
-        _loadCategories();
-      }
+
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(content: Text(result['message'])));
+
+    if (result['success']) {
+      _loadCategories();
     }
   }
 
@@ -654,26 +727,46 @@ class _CategoryScreenState extends State<CategoryScreen> with SingleTickerProvid
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'shopping_cart': return Icons.shopping_cart;
-      case 'restaurant': return Icons.restaurant;
-      case 'local_gas_station': return Icons.local_gas_station;
-      case 'home': return Icons.home;
-      case 'school': return Icons.school;
-      case 'local_hospital': return Icons.local_hospital;
-      case 'emoji_transportation': return Icons.emoji_transportation;
-      case 'phone_android': return Icons.phone_android;
-      case 'checkroom': return Icons.checkroom;
-      case 'sports_esports': return Icons.sports_esports;
-      case 'movie': return Icons.movie;
-      case 'flight': return Icons.flight;
-      case 'hotel': return Icons.hotel;
-      case 'fitness_center': return Icons.fitness_center;
-      case 'pets': return Icons.pets;
-      case 'account_balance_wallet': return Icons.account_balance_wallet;
-      case 'savings': return Icons.savings;
-      case 'business_center': return Icons.business_center;
-      case 'card_giftcard': return Icons.card_giftcard;
-      default: return Icons.label;
+      case 'shopping_cart':
+        return Icons.shopping_cart;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'local_gas_station':
+        return Icons.local_gas_station;
+      case 'home':
+        return Icons.home;
+      case 'school':
+        return Icons.school;
+      case 'local_hospital':
+        return Icons.local_hospital;
+      case 'emoji_transportation':
+        return Icons.emoji_transportation;
+      case 'phone_android':
+        return Icons.phone_android;
+      case 'checkroom':
+        return Icons.checkroom;
+      case 'sports_esports':
+        return Icons.sports_esports;
+      case 'movie':
+        return Icons.movie;
+      case 'flight':
+        return Icons.flight;
+      case 'hotel':
+        return Icons.hotel;
+      case 'fitness_center':
+        return Icons.fitness_center;
+      case 'pets':
+        return Icons.pets;
+      case 'account_balance_wallet':
+        return Icons.account_balance_wallet;
+      case 'savings':
+        return Icons.savings;
+      case 'business_center':
+        return Icons.business_center;
+      case 'card_giftcard':
+        return Icons.card_giftcard;
+      default:
+        return Icons.label;
     }
   }
 

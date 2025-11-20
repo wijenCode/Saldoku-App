@@ -36,7 +36,7 @@ class InvestmentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final user = await _authService.currentUser;
+      final user = _authService.currentUser;
       if (user == null) {
         throw Exception('User not found');
       }
@@ -80,7 +80,7 @@ class InvestmentProvider with ChangeNotifier {
     String? notes,
   }) async {
     try {
-      final user = await _authService.currentUser;
+      final user = _authService.currentUser;
       if (user == null) {
         throw Exception('User not found');
       }

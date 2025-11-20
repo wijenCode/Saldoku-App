@@ -54,10 +54,14 @@ class _TransactionsScreenState extends State<TransactionsScreen>
 
       // Load wallets and categories for caching
       final wallets = await _repository.getActiveWallets(user.id!);
-      final incomeCategories =
-          await _repository.getActiveCategories(user.id!, 'income');
-      final expenseCategories =
-          await _repository.getActiveCategories(user.id!, 'expense');
+      final incomeCategories = await _repository.getActiveCategories(
+        user.id!,
+        'income',
+      );
+      final expenseCategories = await _repository.getActiveCategories(
+        user.id!,
+        'expense',
+      );
 
       _walletsCache.clear();
       _categoriesCache.clear();
@@ -88,10 +92,11 @@ class _TransactionsScreenState extends State<TransactionsScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _TransactionFormSheet(
-        transaction: transaction,
-        repository: _repository,
-      ),
+      builder:
+          (context) => _TransactionFormSheet(
+            transaction: transaction,
+            repository: _repository,
+          ),
     );
 
     if (result == true) {
@@ -102,38 +107,43 @@ class _TransactionsScreenState extends State<TransactionsScreen>
   void _showDeleteConfirmation(model.Transaction transaction) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Transaksi'),
-        content: const Text('Yakin ingin menghapus transaksi ini?\n\nSaldo dompet akan disesuaikan kembali.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final result =
-                  await _repository.deleteTransaction(transaction.id!);
-
-              if (mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result['message'])),
-                );
-
-                if (result['success']) {
-                  _loadData();
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Hapus Transaksi'),
+            content: const Text(
+              'Yakin ingin menghapus transaksi ini?\n\nSaldo dompet akan disesuaikan kembali.',
             ),
-            child: const Text('Hapus'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final result = await _repository.deleteTransaction(
+                    transaction.id!,
+                  );
+
+                  if (!mounted) return;
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    SnackBar(content: Text(result['message'])),
+                  );
+
+                  if (result['success']) {
+                    _loadData();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Hapus'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -151,16 +161,17 @@ class _TransactionsScreenState extends State<TransactionsScreen>
           ],
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildTransactionList(_allTransactions),
-                _buildTransactionList(_incomeTransactions),
-                _buildTransactionList(_expenseTransactions),
-              ],
-            ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildTransactionList(_allTransactions),
+                  _buildTransactionList(_incomeTransactions),
+                  _buildTransactionList(_expenseTransactions),
+                ],
+              ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showTransactionForm(),
         icon: const Icon(Icons.add),
@@ -183,9 +194,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             const SizedBox(height: 16),
             Text(
               'Belum ada transaksi',
-              style: context.bodyStyle.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: context.bodyStyle.copyWith(color: Colors.grey.shade600),
             ),
           ],
         ),
@@ -195,7 +204,10 @@ class _TransactionsScreenState extends State<TransactionsScreen>
     // Group by date
     final groupedTransactions = <String, List<model.Transaction>>{};
     for (var transaction in transactions) {
-      final dateKey = AppDateUtils.format(transaction.date, pattern: 'dd MMM yyyy');
+      final dateKey = AppDateUtils.format(
+        transaction.date,
+        pattern: 'dd MMM yyyy',
+      );
       if (!groupedTransactions.containsKey(dateKey)) {
         groupedTransactions[dateKey] = [];
       }
@@ -267,8 +279,9 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             ),
 
             // Transactions for this day
-            ...dayTransactions
-                .map((transaction) => _buildTransactionItem(transaction)),
+            ...dayTransactions.map(
+              (transaction) => _buildTransactionItem(transaction),
+            ),
 
             const SizedBox(height: 16),
           ],
@@ -288,8 +301,9 @@ class _TransactionsScreenState extends State<TransactionsScreen>
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: (isIncome ? AppColors.success : AppColors.expense)
-                .withOpacity(0.1),
+            color: (isIncome ? AppColors.success : AppColors.expense).withAlpha(
+              (0.1 * 255).round(),
+            ),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -302,9 +316,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             Expanded(
               child: Text(
                 category?.name ?? 'Kategori tidak diketahui',
-                style: context.bodyStyle.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: context.bodyStyle.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             Text(
@@ -322,8 +334,11 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.account_balance_wallet,
-                    size: 14, color: Colors.grey.shade600),
+                Icon(
+                  Icons.account_balance_wallet,
+                  size: 14,
+                  color: Colors.grey.shade600,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   wallet?.name ?? 'Dompet tidak diketahui',
@@ -338,9 +353,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
               const SizedBox(height: 4),
               Text(
                 transaction.description!,
-                style: context.labelStyle.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: context.labelStyle.copyWith(color: Colors.grey.shade600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -358,28 +371,29 @@ class _TransactionsScreenState extends State<TransactionsScreen>
                 break;
             }
           },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit_outlined, size: 20),
-                  SizedBox(width: 12),
-                  Text('Edit'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                  SizedBox(width: 12),
-                  Text('Hapus', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_outlined, size: 20),
+                      SizedBox(width: 12),
+                      Text('Edit'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                      SizedBox(width: 12),
+                      Text('Hapus', style: TextStyle(color: Colors.red)),
+                    ],
+                  ),
+                ),
+              ],
         ),
       ),
     );
@@ -391,10 +405,7 @@ class _TransactionFormSheet extends StatefulWidget {
   final model.Transaction? transaction;
   final TransactionsRepository repository;
 
-  const _TransactionFormSheet({
-    this.transaction,
-    required this.repository,
-  });
+  const _TransactionFormSheet({this.transaction, required this.repository});
 
   @override
   State<_TransactionFormSheet> createState() => _TransactionFormSheetState();
@@ -441,10 +452,14 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
     final user = _authService.currentUser;
     if (user != null) {
       final wallets = await widget.repository.getActiveWallets(user.id!);
-      final incomeCategories =
-          await widget.repository.getActiveCategories(user.id!, 'income');
-      final expenseCategories =
-          await widget.repository.getActiveCategories(user.id!, 'expense');
+      final incomeCategories = await widget.repository.getActiveCategories(
+        user.id!,
+        'income',
+      );
+      final expenseCategories = await widget.repository.getActiveCategories(
+        user.id!,
+        'expense',
+      );
 
       setState(() {
         _wallets = wallets;
@@ -453,12 +468,14 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
 
         // Set defaults
         if (widget.transaction != null) {
-          _selectedWallet =
-              wallets.firstWhere((w) => w.id == widget.transaction!.walletId);
+          _selectedWallet = wallets.firstWhere(
+            (w) => w.id == widget.transaction!.walletId,
+          );
           final categories =
               _selectedType == 'income' ? incomeCategories : expenseCategories;
-          _selectedCategory = categories
-              .firstWhere((c) => c.id == widget.transaction!.categoryId);
+          _selectedCategory = categories.firstWhere(
+            (c) => c.id == widget.transaction!.categoryId,
+          );
         } else {
           if (wallets.isNotEmpty) _selectedWallet = wallets.first;
           if (expenseCategories.isNotEmpty) {
@@ -494,9 +511,10 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
         type: _selectedType,
         amount: amount,
         date: _selectedDate,
-        description: _descriptionController.text.trim().isEmpty
-            ? null
-            : _descriptionController.text.trim(),
+        description:
+            _descriptionController.text.trim().isEmpty
+                ? null
+                : _descriptionController.text.trim(),
       );
     } else {
       // Update existing
@@ -506,9 +524,10 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
         type: _selectedType,
         amount: amount,
         date: _selectedDate,
-        description: _descriptionController.text.trim().isEmpty
-            ? null
-            : _descriptionController.text.trim(),
+        description:
+            _descriptionController.text.trim().isEmpty
+                ? null
+                : _descriptionController.text.trim(),
       );
 
       result = await widget.repository.updateTransaction(
@@ -517,13 +536,12 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
       );
     }
 
-    if (mounted) {
-      setState(() => _isLoading = false);
-      Navigator.pop(context, result['success']);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'])),
-      );
-    }
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    Navigator.pop(context, result['success']);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(result['message'])));
   }
 
   @override
@@ -575,9 +593,10 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
                   setState(() {
                     _selectedType = selection.first;
                     // Reset category when type changes
-                    final newCategories = _selectedType == 'income'
-                        ? _incomeCategories
-                        : _expenseCategories;
+                    final newCategories =
+                        _selectedType == 'income'
+                            ? _incomeCategories
+                            : _expenseCategories;
                     if (newCategories.isNotEmpty) {
                       _selectedCategory = newCategories.first;
                     }
@@ -612,7 +631,7 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
 
               // Wallet dropdown
               DropdownButtonFormField<Wallet>(
-                value: _selectedWallet,
+                initialValue: _selectedWallet,
                 decoration: InputDecoration(
                   labelText: 'Dompet',
                   prefixIcon: const Icon(Icons.account_balance_wallet),
@@ -620,24 +639,24 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                items: _wallets.map((wallet) {
-                  return DropdownMenuItem(
-                    value: wallet,
-                    child: Text(wallet.name),
-                  );
-                }).toList(),
+                items:
+                    _wallets.map((wallet) {
+                      return DropdownMenuItem(
+                        value: wallet,
+                        child: Text(wallet.name),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() => _selectedWallet = value);
                 },
-                validator: (value) =>
-                    value == null ? 'Pilih dompet' : null,
+                validator: (value) => value == null ? 'Pilih dompet' : null,
               ),
 
               const SizedBox(height: 16),
 
               // Category dropdown
               DropdownButtonFormField<cat.Category>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Kategori',
                   prefixIcon: const Icon(Icons.category),
@@ -645,17 +664,17 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                items: categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category.name),
-                  );
-                }).toList(),
+                items:
+                    categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category.name),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() => _selectedCategory = value);
                 },
-                validator: (value) =>
-                    value == null ? 'Pilih kategori' : null,
+                validator: (value) => value == null ? 'Pilih kategori' : null,
               ),
 
               const SizedBox(height: 16),
@@ -700,13 +719,16 @@ class _TransactionFormSheetState extends State<_TransactionFormSheet> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(widget.transaction == null ? 'Simpan' : 'Perbarui'),
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : Text(
+                            widget.transaction == null ? 'Simpan' : 'Perbarui',
+                          ),
                 ),
               ),
             ],

@@ -32,8 +32,9 @@ class ProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: height,
-            backgroundColor: backgroundColor ??
-                context.textColor.withOpacity(0.1),
+            backgroundColor:
+                backgroundColor ??
+                context.textColor.withAlpha((0.1 * 255).round()),
             valueColor: AlwaysStoppedAnimation<Color>(progressColor),
           ),
         ),
@@ -92,7 +93,7 @@ class CircularProgress extends StatelessWidget {
             child: CircularProgressIndicator(
               value: progress,
               strokeWidth: strokeWidth,
-              backgroundColor: context.textColor.withOpacity(0.1),
+              backgroundColor: context.textColor.withAlpha((0.1 * 255).round()),
               valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             ),
           ),

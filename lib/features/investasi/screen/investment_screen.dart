@@ -33,7 +33,7 @@ class _InvestmentScreenState extends State<InvestmentScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await _authService.currentUser;
+      final user = _authService.currentUser;
       if (user == null) throw Exception('User not found');
 
       final investments = await _repository.getInvestments(user.id!);
@@ -78,37 +78,49 @@ class _InvestmentScreenState extends State<InvestmentScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const LoadingState()
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: PortfolioSummaryCard(statistics: _statistics),
-                  ),
-                  SliverToBoxAdapter(
-                    child: TypeDistributionCard(typeDistribution: _typeDistribution),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: SegmentedButton<String>(
-                        segments: const [
-                          ButtonSegment(value: 'all', label: Text('Semua')),
-                          ButtonSegment(value: 'active', label: Text('Aktif')),
-                          ButtonSegment(value: 'sold', label: Text('Terjual')),
-                          ButtonSegment(value: 'matured', label: Text('Jatuh Tempo')),
-                        ],
-                        selected: {_filterStatus},
-                        onSelectionChanged: (Set<String> newSelection) {
-                          setState(() => _filterStatus = newSelection.first);
-                        },
+      body:
+          _isLoading
+              ? const LoadingState()
+              : RefreshIndicator(
+                onRefresh: _loadData,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: PortfolioSummaryCard(statistics: _statistics),
+                    ),
+                    SliverToBoxAdapter(
+                      child: TypeDistributionCard(
+                        typeDistribution: _typeDistribution,
                       ),
                     ),
-                  ),
-                  _filteredInvestments.isEmpty
-                      ? SliverFillRemaining(
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(value: 'all', label: Text('Semua')),
+                            ButtonSegment(
+                              value: 'active',
+                              label: Text('Aktif'),
+                            ),
+                            ButtonSegment(
+                              value: 'sold',
+                              label: Text('Terjual'),
+                            ),
+                            ButtonSegment(
+                              value: 'matured',
+                              label: Text('Jatuh Tempo'),
+                            ),
+                          ],
+                          selected: {_filterStatus},
+                          onSelectionChanged: (Set<String> newSelection) {
+                            setState(() => _filterStatus = newSelection.first);
+                          },
+                        ),
+                      ),
+                    ),
+                    _filteredInvestments.isEmpty
+                        ? SliverFillRemaining(
                           child: EmptyState(
                             icon: Icons.trending_up,
                             title: 'Belum Ada Investasi',
@@ -119,24 +131,28 @@ class _InvestmentScreenState extends State<InvestmentScreen> {
                             ),
                           ),
                         )
-                      : SliverPadding(
+                        : SliverPadding(
                           padding: const EdgeInsets.all(16),
                           sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final investment = _filteredInvestments[index];
-                                return InvestmentCard(
-                                  investment: investment,
-                                  onTap: () => _showInvestmentDetail(context, investment),
-                                );
-                              },
-                              childCount: _filteredInvestments.length,
-                            ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final investment = _filteredInvestments[index];
+                              return InvestmentCard(
+                                investment: investment,
+                                onTap:
+                                    () => _showInvestmentDetail(
+                                      context,
+                                      investment,
+                                    ),
+                              );
+                            }, childCount: _filteredInvestments.length),
                           ),
                         ),
-                ],
+                  ],
+                ),
               ),
-            ),
     );
   }
 
@@ -145,10 +161,9 @@ class _InvestmentScreenState extends State<InvestmentScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => InvestmentFormSheet(
-        investment: investment,
-        onSaved: _loadData,
-      ),
+      builder:
+          (ctx) =>
+              InvestmentFormSheet(investment: investment, onSaved: _loadData),
     );
   }
 
@@ -157,11 +172,12 @@ class _InvestmentScreenState extends State<InvestmentScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => InvestmentDetailSheet(
-        investment: investment,
-        onUpdate: _loadData,
-        onEdit: () => _showInvestmentForm(context, investment),
-      ),
+      builder:
+          (ctx) => InvestmentDetailSheet(
+            investment: investment,
+            onUpdate: _loadData,
+            onEdit: () => _showInvestmentForm(context, investment),
+          ),
     );
   }
 }

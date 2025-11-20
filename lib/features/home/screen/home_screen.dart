@@ -13,8 +13,9 @@ import '../../../core/models/wallet.dart';
 import '../../../core/db/dao/category_dao.dart';
 import '../../../core/db/dao/wallet_dao.dart';
 import '../../profile/screen/profile_screen.dart';
-import '../../manajemen_dompet/screen/wallet_screen.dart';
+// import '../../manajemen_dompet/screen/wallet_screen.dart';
 import '../data/home_repository.dart';
+import '../../laporan_keuangan/screen/reports_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _homeRepository = HomeRepository();
   final _categoryDao = CategoryDao();
   final _walletDao = WalletDao();
-  
+
   // Data dari repository
   double _totalBalance = 0.0;
   double _monthlyIncome = 0.0;
@@ -52,27 +53,30 @@ class _HomeScreenState extends State<HomeScreen> {
     if (user != null) {
       try {
         final dashboardData = await _homeRepository.refreshDashboard(user.id!);
-        final notifCount = await _notificationService.getNotificationCount(user.id!);
-        
+        final notifCount = await _notificationService.getNotificationCount(
+          user.id!,
+        );
+
         // Cache categories and wallets for display
         final categories = await _categoryDao.getByUserId(user.id!);
         final wallets = await _walletDao.getByUserId(user.id!);
-        
+
         final categoriesMap = <int, Category>{};
         for (var cat in categories) {
           categoriesMap[cat.id!] = cat;
         }
-        
+
         final walletsMap = <int, Wallet>{};
         for (var wallet in wallets) {
           walletsMap[wallet.id!] = wallet;
         }
-        
+
         setState(() {
           _totalBalance = dashboardData['balance'] as double;
           _monthlyIncome = dashboardData['monthlyIncome'] as double;
           _monthlyExpense = dashboardData['monthlyExpense'] as double;
-          _recentTransactions = dashboardData['recentTransactions'] as List<Transaction>;
+          _recentTransactions =
+              dashboardData['recentTransactions'] as List<Transaction>;
           _categoriesCache = categoriesMap;
           _walletsCache = walletsMap;
           _notificationCount = notifCount;
@@ -124,14 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
   // Home Tab - Dashboard
   Widget _buildHomeTab() {
     final user = _authService.currentUser;
-    
+
     // Show loading indicator
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
-    
+
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: _loadData,
@@ -145,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: context.surfaceColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withAlpha((0.05 * 255).round()),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -156,7 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Avatar
                     CircleAvatar(
                       radius: 24,
-                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      backgroundColor: AppColors.primary.withAlpha(
+                        (0.1 * 255).round(),
+                      ),
                       child: Text(
                         user?.name.substring(0, 1).toUpperCase() ?? 'U',
                         style: context.titleStyle.copyWith(
@@ -165,9 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(width: 12),
-                    
+
                     // Greeting
                     Expanded(
                       child: Column(
@@ -176,7 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'Selamat ${_getGreeting()}',
                             style: context.labelStyle.copyWith(
-                              color: context.textColor.withOpacity(0.6),
+                              color: context.textColor.withAlpha(
+                                (0.6 * 255).round(),
+                              ),
                             ),
                           ),
                           Text(
@@ -188,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    
+
                     // Notification icon
                     Stack(
                       children: [
@@ -213,7 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 minHeight: 16,
                               ),
                               child: Text(
-                                _notificationCount > 9 ? '9+' : '$_notificationCount',
+                                _notificationCount > 9
+                                    ? '9+'
+                                    : '$_notificationCount',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -229,21 +237,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            
+
             SliverPadding(
               padding: const EdgeInsets.all(20),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   // Total Balance Card
                   _buildBalanceCard(),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Income & Expense Summary
                   _buildIncomeExpenseSummary(),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Quick Actions
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -256,13 +264,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   _buildQuickActions(),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Recent Transactions
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -286,9 +294,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   _buildRecentTransactions(),
                 ]),
               ),
@@ -312,19 +320,19 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Total Saldo',
                 style: context.labelStyle.copyWith(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withAlpha((0.9 * 255).round()),
                 ),
               ),
               Icon(
                 Icons.account_balance_wallet_rounded,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withAlpha((0.9 * 255).round()),
                 size: 20,
               ),
             ],
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           Text(
             CurrencyFormat.format(_totalBalance, currency: 'IDR'),
             style: context.headlineStyle.copyWith(
@@ -333,13 +341,13 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 32,
             ),
           ),
-          
+
           const SizedBox(height: 4),
-          
+
           Text(
             'Update ${AppDateUtils.formatRelative(DateTime.now())}',
             style: context.labelSmallStyle.copyWith(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withAlpha((0.8 * 255).round()),
             ),
           ),
         ],
@@ -362,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.success.withOpacity(0.1),
+                        color: AppColors.success.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -394,9 +402,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        
+
         const SizedBox(width: 4),
-        
+
         // Expense
         Expanded(
           child: CustomCard(
@@ -409,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.expense.withOpacity(0.1),
+                        color: AppColors.expense.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -520,14 +528,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withAlpha((0.1 * 255).round()),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -552,101 +556,109 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      children: _recentTransactions.map((transaction) {
-        final isIncome = transaction.type == 'income';
-        final color = isIncome ? AppColors.success : AppColors.expense;
-        final category = _categoriesCache[transaction.categoryId];
-        final wallet = _walletsCache[transaction.walletId];
-        
-        // Get icon from category or use default
-        IconData icon;
-        if (category?.icon != null && category!.icon!.isNotEmpty) {
-          // Map string icon to IconData (simplified)
-          icon = _getIconData(category.icon!);
-        } else {
-          icon = isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
-        }
-        
-        return CustomCard(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
-              ),
-              
-              const SizedBox(width: 12),
-              
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category?.name ?? 'Kategori',
-                      style: context.bodyBoldStyle,
+      children:
+          _recentTransactions.map((transaction) {
+            final isIncome = transaction.type == 'income';
+            final color = isIncome ? AppColors.success : AppColors.expense;
+            final category = _categoriesCache[transaction.categoryId];
+            final wallet = _walletsCache[transaction.walletId];
+
+            // Get icon from category or use default
+            IconData icon;
+            if (category?.icon != null && category!.icon!.isNotEmpty) {
+              // Map string icon to IconData (simplified)
+              icon = _getIconData(category.icon!);
+            } else {
+              icon =
+                  isIncome
+                      ? Icons.arrow_downward_rounded
+                      : Icons.arrow_upward_rounded;
+            }
+
+            return CustomCard(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withAlpha((0.1 * 255).round()),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
+                    child: Icon(icon, color: color, size: 24),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.account_balance_wallet,
-                          size: 12,
-                          color: context.textColor.withOpacity(0.6),
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            wallet?.name ?? 'Dompet',
-                            style: context.labelSmallStyle.copyWith(
-                              color: context.textColor.withOpacity(0.6),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
                         Text(
-                          AppDateUtils.formatRelativeWithTime(transaction.date),
-                          style: context.labelSmallStyle.copyWith(
-                            color: context.textColor.withOpacity(0.6),
-                          ),
+                          category?.name ?? 'Kategori',
+                          style: context.bodyBoldStyle,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.account_balance_wallet,
+                              size: 12,
+                              color: context.textColor.withAlpha(
+                                (0.6 * 255).round(),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                wallet?.name ?? 'Dompet',
+                                style: context.labelSmallStyle.copyWith(
+                                  color: context.textColor.withAlpha(
+                                    (0.6 * 255).round(),
+                                  ),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              AppDateUtils.formatRelativeWithTime(
+                                transaction.date,
+                              ),
+                              style: context.labelSmallStyle.copyWith(
+                                color: context.textColor.withAlpha(
+                                  (0.6 * 255).round(),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  Text(
+                    CurrencyFormat.formatWithSign(
+                      transaction.amount,
+                      transaction.type,
+                      currency: 'IDR',
+                    ),
+                    style: context.titleSmallStyle.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
-              
-              const SizedBox(width: 8),
-              
-              Text(
-                CurrencyFormat.formatWithSign(
-                  transaction.amount,
-                  transaction.type,
-                  currency: 'IDR',
-                ),
-                style: context.titleSmallStyle.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
-  
+
   IconData _getIconData(String iconName) {
     // Map common icon names to IconData
     switch (iconName.toLowerCase()) {
@@ -687,19 +699,122 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildWalletsTab() {
     final user = _authService.currentUser;
     if (user == null) {
-      return const Center(
-        child: Text('User tidak ditemukan'),
-      );
+      return const Center(child: Text('User tidak ditemukan'));
     }
-    
-    return WalletScreen(userId: user.id!);
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    // Sama seperti dashboard: tampilkan saldo total dan daftar dompet
+    return SafeArea(
+      child: RefreshIndicator(
+        onRefresh: _loadData,
+        child: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            // Total Balance Card
+            CustomCard(
+              padding: const EdgeInsets.all(20),
+              color: AppColors.primary,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Saldo',
+                        style: context.labelStyle.copyWith(
+                          color: Colors.white.withAlpha((0.9 * 255).round()),
+                        ),
+                      ),
+                      Icon(
+                        Icons.account_balance_wallet_rounded,
+                        color: Colors.white.withAlpha((0.9 * 255).round()),
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    CurrencyFormat.format(_totalBalance, currency: 'IDR'),
+                    style: context.headlineStyle.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 32,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Update ${AppDateUtils.formatRelative(DateTime.now())}',
+                    style: context.labelSmallStyle.copyWith(
+                      color: Colors.white.withAlpha((0.8 * 255).round()),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Daftar Dompet',
+              style: context.titleStyle.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            ..._walletsCache.values.map(
+              (wallet) => CustomCard(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withAlpha((0.1 * 255).round()),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.account_balance_wallet_rounded,
+                        color: AppColors.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(wallet.name, style: context.bodyBoldStyle),
+                          const SizedBox(height: 4),
+                          Text('Saldo', style: context.labelSmallStyle),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      CurrencyFormat.format(wallet.balance, currency: 'IDR'),
+                      style: context.titleSmallStyle.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_walletsCache.isEmpty)
+              const Center(child: Text('Belum ada dompet')),
+          ],
+        ),
+      ),
+    );
   }
 
   // Reports Tab
   Widget _buildReportsTab() {
-    return const Center(
-      child: Text('Laporan Screen - Coming Soon'),
-    );
+    final user = _authService.currentUser;
+    if (user == null) {
+      return const Center(child: Text('User tidak ditemukan'));
+    }
+    return LaporanKeuanganScreen(userId: user.id!);
   }
 
   String _getGreeting() {

@@ -95,7 +95,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.3),
+            color: Colors.blueAccent.withAlpha((0.3 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -177,7 +177,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 child: LinearProgressIndicator(
                   value: _provider.overallPercentage / 100,
                   minHeight: 8,
-                  backgroundColor: Colors.white.withOpacity(0.2),
+                  backgroundColor: Colors.white.withAlpha((0.2 * 255).round()),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     _provider.overallPercentage > 100
                         ? Colors.redAccent
@@ -369,7 +369,9 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.redAccent.withOpacity(0.1),
+                          color: Colors.redAccent.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(
@@ -532,10 +534,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.createBudget(budget, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Anggaran berhasil ditambahkan'),
                   ),
@@ -568,10 +573,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.updateBudget(updatedBudget, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Anggaran berhasil diupdate')),
                 );
               } catch (e) {
@@ -638,10 +646,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               TextButton(
                 onPressed: () async {
                   try {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
                     await _provider.deleteBudget(budgetId, widget.userId);
+                    if (!mounted) return;
                     setState(() {});
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    messenger.showSnackBar(
                       const SnackBar(
                         content: Text('Anggaran berhasil dihapus'),
                       ),

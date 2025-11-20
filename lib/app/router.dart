@@ -22,6 +22,9 @@ import '../features/manajemen_kategori/screen/category_screen.dart';
 import '../features/transaksi_harian/screen/transactions_screen.dart';
 import '../features/transfer_dompet/screen/transfer_screen.dart';
 import '../features/investasi/screen/investment_screen.dart';
+import '../features/tagihan/screen/bills_screen.dart';
+import '../features/target_tabungan/screen/goals_screen.dart';
+import '../features/laporan_keuangan/screen/reports_screen.dart';
 
 /// App Router untuk mengelola navigasi
 class AppRouter {
@@ -197,6 +200,31 @@ class AppRouter {
           settings: settings,
         );
 
+      // Bills and Savings routes (implemented)
+      case AppRouter.bills:
+        return MaterialPageRoute(
+          builder: (_) => const BillsScreen(userId: 1),
+          settings: settings,
+        );
+
+      case AppRouter.savingsGoals:
+        return MaterialPageRoute(
+          builder: (_) => const GoalsScreen(userId: 1),
+          settings: settings,
+        );
+
+      case AppRouter.incomeExpenseReport:
+        return MaterialPageRoute(
+          builder: (_) => const LaporanKeuanganScreen(userId: 1),
+          settings: settings,
+        );
+
+      case AppRouter.reports:
+        return MaterialPageRoute(
+          builder: (_) => const LaporanKeuanganScreen(userId: 1),
+          settings: settings,
+        );
+
       // ===== ROUTE YANG BELUM DIBUAT - COMING SOON =====
       case AppRouter.walletForm:
       case AppRouter.walletDetail:
@@ -205,17 +233,13 @@ class AppRouter {
       case AppRouter.categoryForm:
       case AppRouter.budgetForm:
       case AppRouter.budgetDetail:
-      case AppRouter.bills:
       case AppRouter.billForm:
       case AppRouter.billDetail:
-      case AppRouter.savingsGoals:
       case AppRouter.savingsGoalForm:
       case AppRouter.savingsGoalDetail:
       case AppRouter.debtForm:
       case AppRouter.debtDetail:
       case AppRouter.debtPaymentForm:
-      case AppRouter.reports:
-      case AppRouter.incomeExpenseReport:
       case AppRouter.cashFlowReport:
       case AppRouter.categoryReport:
         return MaterialPageRoute(

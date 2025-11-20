@@ -27,13 +27,13 @@ class EmptyState extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: context.textColor.withOpacity(0.3),
+              color: context.textColor.withAlpha((0.3 * 255).round()),
             ),
             const SizedBox(height: 16),
             Text(
               title,
               style: context.titleStyle.copyWith(
-                color: context.textColor.withOpacity(0.6),
+                color: context.textColor.withAlpha((0.6 * 255).round()),
               ),
               textAlign: TextAlign.center,
             ),
@@ -42,15 +42,12 @@ class EmptyState extends StatelessWidget {
               Text(
                 message!,
                 style: context.bodyStyle.copyWith(
-                  color: context.textColor.withOpacity(0.5),
+                  color: context.textColor.withAlpha((0.5 * 255).round()),
                 ),
                 textAlign: TextAlign.center,
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: 24),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 24), action!],
           ],
         ),
       ),
@@ -79,16 +76,12 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 80,
-              color: context.expenseColor,
-            ),
+            Icon(Icons.error_outline, size: 80, color: context.expenseColor),
             const SizedBox(height: 16),
             Text(
               title,
               style: context.titleStyle.copyWith(
-                color: context.textColor.withOpacity(0.8),
+                color: context.textColor.withAlpha((0.8 * 255).round()),
               ),
               textAlign: TextAlign.center,
             ),
@@ -97,7 +90,7 @@ class ErrorState extends StatelessWidget {
               Text(
                 message!,
                 style: context.bodyStyle.copyWith(
-                  color: context.textColor.withOpacity(0.6),
+                  color: context.textColor.withAlpha((0.6 * 255).round()),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -121,10 +114,7 @@ class ErrorState extends StatelessWidget {
 class LoadingState extends StatelessWidget {
   final String? message;
 
-  const LoadingState({
-    super.key,
-    this.message,
-  });
+  const LoadingState({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +128,7 @@ class LoadingState extends StatelessWidget {
             Text(
               message!,
               style: context.bodyStyle.copyWith(
-                color: context.textColor.withOpacity(0.6),
+                color: context.textColor.withAlpha((0.6 * 255).round()),
               ),
             ),
           ],

@@ -126,14 +126,14 @@ class _DebtsScreenState extends State<DebtsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.8), color],
+          colors: [color.withAlpha((0.8 * 255).round()), color],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withAlpha((0.3 * 255).round()),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -156,7 +156,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withAlpha((0.2 * 255).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: Colors.white, size: 16),
@@ -347,8 +347,12 @@ class _DebtsScreenState extends State<DebtsScreen> {
                                 decoration: BoxDecoration(
                                   color:
                                       isDebt
-                                          ? Colors.redAccent.withOpacity(0.1)
-                                          : Colors.greenAccent.withOpacity(0.1),
+                                          ? Colors.redAccent.withAlpha(
+                                            (0.1 * 255).round(),
+                                          )
+                                          : Colors.greenAccent.withAlpha(
+                                            (0.1 * 255).round(),
+                                          ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -367,7 +371,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: statusColor.withOpacity(0.1),
+                                  color: statusColor.withAlpha(
+                                    (0.1 * 255).round(),
+                                  ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -592,10 +598,13 @@ class _DebtsScreenState extends State<DebtsScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.createDebt(debt, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Hutang/piutang berhasil ditambahkan'),
                   ),
@@ -629,10 +638,13 @@ class _DebtsScreenState extends State<DebtsScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.updateDebt(updatedDebt, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Hutang/piutang berhasil diupdate'),
                   ),
@@ -704,10 +716,13 @@ class _DebtsScreenState extends State<DebtsScreen> {
               );
 
               try {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await _provider.createDebtPayment(payment, widget.userId);
+                if (!mounted) return;
                 setState(() {});
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   const SnackBar(content: Text('Pembayaran berhasil dicatat')),
                 );
               } catch (e) {
@@ -734,10 +749,13 @@ class _DebtsScreenState extends State<DebtsScreen> {
               TextButton(
                 onPressed: () async {
                   try {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
                     await _provider.deleteDebt(debtId, widget.userId);
+                    if (!mounted) return;
                     setState(() {});
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    messenger.showSnackBar(
                       const SnackBar(
                         content: Text('Hutang/piutang berhasil dihapus'),
                       ),
@@ -827,7 +845,7 @@ class _DebtFormDialogState extends State<_DebtFormDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              value: _selectedType,
+              initialValue: _selectedType,
               decoration: InputDecoration(
                 labelText: 'Tipe',
                 border: OutlineInputBorder(

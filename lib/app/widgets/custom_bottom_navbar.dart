@@ -27,7 +27,7 @@ class CustomBottomNavBar extends StatelessWidget {
             color: context.surfaceColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha((0.1 * 255).round()),
                 blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
@@ -72,10 +72,7 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
         // Floating Action Button di tengah
-        Positioned(
-          bottom: 25,
-          child: _buildFloatingAddButton(context),
-        ),
+        Positioned(bottom: 25, child: _buildFloatingAddButton(context)),
       ],
     );
   }
@@ -87,7 +84,10 @@ class CustomBottomNavBar extends StatelessWidget {
     required int index,
   }) {
     final isSelected = currentIndex == index;
-    final color = isSelected ? AppColors.primary : context.textColor.withOpacity(0.5);
+    final color =
+        isSelected
+            ? AppColors.primary
+            : context.textColor.withAlpha((0.5 * 255).round());
 
     return Expanded(
       child: InkWell(
@@ -98,11 +98,7 @@ class CustomBottomNavBar extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: 26,
-              ),
+              Icon(icon, color: color, size: 26),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -126,27 +122,20 @@ class CustomBottomNavBar extends StatelessWidget {
         height: 65,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.primary,
-              AppColors.primaryLight,
-            ],
+            colors: [AppColors.primary, AppColors.primaryLight],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
+              color: AppColors.primary.withAlpha((0.4 * 255).round()),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: const Icon(
-          Icons.add_rounded,
-          color: Colors.white,
-          size: 32,
-        ),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
       ),
     );
   }
@@ -162,9 +151,7 @@ class AddTransactionBottomSheet extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -174,7 +161,7 @@ class AddTransactionBottomSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: context.textColor.withOpacity(0.3),
+              color: context.textColor.withAlpha((0.3 * 255).round()),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -182,9 +169,7 @@ class AddTransactionBottomSheet extends StatelessWidget {
           // Title
           Text(
             'Tambah Transaksi',
-            style: context.titleStyle.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: context.titleStyle.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 24),
           // Options
@@ -243,10 +228,10 @@ class AddTransactionBottomSheet extends StatelessWidget {
         width: 100,
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withAlpha((0.1 * 255).round()),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withAlpha((0.3 * 255).round()),
             width: 1.5,
           ),
         ),
@@ -256,14 +241,10 @@ class AddTransactionBottomSheet extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withAlpha((0.2 * 255).round()),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
+              child: Icon(icon, color: color, size: 28),
             ),
             const SizedBox(height: 12),
             Text(

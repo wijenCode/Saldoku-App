@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: context.surfaceColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withAlpha((0.05 * 255).round()),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -44,16 +44,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundColor: AppColors.primary.withOpacity(0.1),
-                          child: user?.avatar != null
-                              ? null
-                              : Text(
-                                  user?.name.substring(0, 1).toUpperCase() ?? 'U',
-                                  style: context.headlineStyle.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
+                          backgroundColor: AppColors.primary.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
+                          child:
+                              user?.avatar != null
+                                  ? null
+                                  : Text(
+                                    user?.name.substring(0, 1).toUpperCase() ??
+                                        'U',
+                                    style: context.headlineStyle.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                ),
                         ),
                         Positioned(
                           bottom: 0,
@@ -77,9 +81,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Name
                     Text(
                       user?.name ?? 'User',
@@ -87,19 +91,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 4),
-                    
+
                     // Email
                     Text(
                       user?.email ?? '',
                       style: context.bodyStyle.copyWith(
-                        color: context.textColor.withOpacity(0.6),
+                        color: context.textColor.withAlpha((0.6 * 255).round()),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     // Edit Profile Button
                     OutlinedButton.icon(
                       onPressed: () {
@@ -118,9 +122,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Menu Items
               _buildMenuSection(
                 title: 'Akun',
@@ -139,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              
+
               _buildMenuSection(
                 title: 'Pengaturan',
                 items: [
@@ -159,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              
+
               _buildMenuSection(
                 title: 'Lainnya',
                 items: [
@@ -181,9 +185,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Logout Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -194,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icons.logout_rounded,
                 ),
               ),
-              
+
               const SizedBox(height: 24),
             ],
           ),
@@ -215,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             title,
             style: context.labelStyle.copyWith(
-              color: context.textColor.withOpacity(0.6),
+              color: context.textColor.withAlpha((0.6 * 255).round()),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -224,10 +228,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: EdgeInsets.zero,
           child: Column(
-            children: items
-                .asMap()
-                .entries
-                .map((entry) {
+            children:
+                items.asMap().entries.map((entry) {
                   final index = entry.key;
                   final item = entry.value;
                   return Column(
@@ -236,7 +238,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withAlpha(
+                              (0.1 * 255).round(),
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -245,18 +249,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: 20,
                           ),
                         ),
-                        title: Text(
-                          item.title,
-                          style: context.bodyBoldStyle,
-                        ),
-                        subtitle: item.subtitle != null
-                            ? Text(
-                                item.subtitle!,
-                                style: context.labelSmallStyle.copyWith(
-                                  color: context.textColor.withOpacity(0.6),
-                                ),
-                              )
-                            : null,
+                        title: Text(item.title, style: context.bodyBoldStyle),
+                        subtitle:
+                            item.subtitle != null
+                                ? Text(
+                                  item.subtitle!,
+                                  style: context.labelSmallStyle.copyWith(
+                                    color: context.textColor.withAlpha(
+                                      (0.6 * 255).round(),
+                                    ),
+                                  ),
+                                )
+                                : null,
                         trailing: const Icon(
                           Icons.chevron_right_rounded,
                           size: 20,
@@ -267,12 +271,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Divider(
                           height: 1,
                           indent: 68,
-                          color: context.textColor.withOpacity(0.1),
+                          color: context.textColor.withAlpha(
+                            (0.1 * 255).round(),
+                          ),
                         ),
                     ],
                   );
-                })
-                .toList(),
+                }).toList(),
           ),
         ),
       ],
@@ -280,6 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showLogoutConfirmation(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final confirmed = await CustomDialog.showConfirmation(
       context: context,
       title: 'Keluar',
@@ -289,11 +295,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isDanger: true,
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true) {
       await _authService.logout();
-      if (mounted) {
-        context.pushNamedAndRemoveUntil(AppRouter.login);
-      }
+      if (!mounted) return;
+      navigator.pushNamedAndRemoveUntil(AppRouter.login, (route) => false);
     }
   }
 }

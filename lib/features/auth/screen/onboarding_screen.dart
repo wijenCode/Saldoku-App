@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               )
             else
               const SizedBox(height: 60),
-            
+
             // PageView
             Expanded(
               child: PageView.builder(
@@ -100,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            
+
             // Indicators
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -109,9 +109,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 (index) => _buildIndicator(index),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -119,14 +119,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _currentPage == _items.length - 1
-                      ? _onComplete
-                      : () {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
+                  onPressed:
+                      _currentPage == _items.length - 1
+                          ? _onComplete
+                          : () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -144,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 32),
           ],
         ),
@@ -163,18 +164,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             width: 200,
             height: 200,
             decoration: BoxDecoration(
-              color: item.color.withOpacity(0.1),
+              color: item.color.withAlpha((0.1 * 255).round()),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              item.icon,
-              size: 100,
-              color: item.color,
-            ),
+            child: Icon(item.icon, size: 100, color: item.color),
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // Title
           Text(
             item.title,
@@ -184,15 +181,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               height: 1.2,
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Description
           Text(
             item.description,
             textAlign: TextAlign.center,
             style: context.bodyStyle.copyWith(
-              color: context.textColor.withOpacity(0.7),
+              color: context.textColor.withAlpha((0.7 * 255).round()),
             ),
           ),
         ],
@@ -207,9 +204,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: _currentPage == index ? 24 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: _currentPage == index
-            ? AppColors.primary
-            : context.textColor.withOpacity(0.2),
+        color:
+            _currentPage == index
+                ? AppColors.primary
+                : context.textColor.withAlpha((0.2 * 255).round()),
         borderRadius: BorderRadius.circular(4),
       ),
     );

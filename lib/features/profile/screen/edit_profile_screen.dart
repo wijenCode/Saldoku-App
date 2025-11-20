@@ -14,11 +14,11 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
-  
+
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
-  
+
   bool _isLoading = false;
 
   @override
@@ -72,9 +72,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Edit Profil',
-      ),
+      appBar: CustomAppBar(title: 'Edit Profil'),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -89,10 +87,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 60,
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
+                        backgroundColor: AppColors.primary.withAlpha(
+                          (0.1 * 255).round(),
+                        ),
                         child: Text(
                           _nameController.text.isNotEmpty
-                              ? _nameController.text.substring(0, 1).toUpperCase()
+                              ? _nameController.text
+                                  .substring(0, 1)
+                                  .toUpperCase()
                               : 'U',
                           style: context.headlineLargeStyle.copyWith(
                             color: AppColors.primary,
@@ -123,9 +125,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Name Field
                 CustomTextField(
                   controller: _nameController,
@@ -139,9 +141,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Email Field
                 CustomTextField(
                   controller: _emailController,
@@ -159,9 +161,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Phone Field
                 CustomTextField(
                   controller: _phoneController,
@@ -178,9 +180,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Save Button
                 CustomButton(
                   text: 'Simpan Perubahan',

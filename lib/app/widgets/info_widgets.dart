@@ -29,7 +29,7 @@ class InfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha((0.05 * 255).round()),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -38,24 +38,18 @@ class InfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: iconColor ?? context.primaryColor,
-            size: 32,
-          ),
+          Icon(icon, color: iconColor ?? context.primaryColor, size: 32),
           const SizedBox(height: 12),
           Text(
             title,
             style: context.labelStyle.copyWith(
-              color: context.textColor.withOpacity(0.7),
+              color: context.textColor.withAlpha((0.7 * 255).round()),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: context.titleStyle.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: context.titleStyle.copyWith(fontWeight: FontWeight.w700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -95,14 +89,12 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: context.titleStyle,
-          ),
+          Text(title, style: context.titleStyle),
           if (actionText != null || actionIcon != null)
             TextButton(
               onPressed: onActionPressed,
@@ -110,17 +102,10 @@ class SectionHeader extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (actionText != null)
-                    Text(
-                      actionText!,
-                      style: context.primaryText,
-                    ),
+                    Text(actionText!, style: context.primaryText),
                   if (actionIcon != null) ...[
                     if (actionText != null) const SizedBox(width: 4),
-                    Icon(
-                      actionIcon,
-                      size: 18,
-                      color: context.primaryColor,
-                    ),
+                    Icon(actionIcon, size: 18, color: context.primaryColor),
                   ],
                 ],
               ),

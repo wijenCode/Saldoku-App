@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import '../theme/widgets/theme_extensions.dart';
 
@@ -32,21 +34,16 @@ class CustomDropdown<T> extends StatelessWidget {
         if (label != null) ...[
           Text(
             label!,
-            style: context.labelStyle.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: context.labelStyle.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
         ],
         DropdownButtonFormField<T>(
-          value: value,
+          initialValue: value,
           items: items,
           onChanged: enabled ? onChanged : null,
           validator: validator,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: prefixIcon,
-          ),
+          decoration: InputDecoration(hintText: hint, prefixIcon: prefixIcon),
           style: context.bodyStyle,
           dropdownColor: context.surfaceColor,
         ),
@@ -79,15 +76,16 @@ class SearchField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint ?? 'Cari...',
         prefixIcon: const Icon(Icons.search),
-        suffixIcon: controller != null && controller!.text.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  controller?.clear();
-                  onClear?.call();
-                },
-              )
-            : null,
+        suffixIcon:
+            controller != null && controller!.text.isNotEmpty
+                ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    controller?.clear();
+                    onClear?.call();
+                  },
+                )
+                : null,
       ),
     );
   }
@@ -113,16 +111,9 @@ class CustomCheckboxTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-      title: Text(
-        title,
-        style: context.bodyStyle,
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: context.labelStyle,
-            )
-          : null,
+      title: Text(title, style: context.bodyStyle),
+      subtitle:
+          subtitle != null ? Text(subtitle!, style: context.labelStyle) : null,
       value: value,
       onChanged: onChanged,
       secondary: secondary,
@@ -154,16 +145,9 @@ class CustomRadioTile<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RadioListTile<T>(
-      title: Text(
-        title,
-        style: context.bodyStyle,
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: context.labelStyle,
-            )
-          : null,
+      title: Text(title, style: context.bodyStyle),
+      subtitle:
+          subtitle != null ? Text(subtitle!, style: context.labelStyle) : null,
       value: value,
       groupValue: groupValue,
       onChanged: onChanged,

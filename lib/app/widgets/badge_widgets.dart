@@ -8,12 +8,7 @@ class StatusBadge extends StatelessWidget {
   final Color? color;
   final IconData? icon;
 
-  const StatusBadge({
-    super.key,
-    required this.text,
-    this.color,
-    this.icon,
-  });
+  const StatusBadge({super.key, required this.text, this.color, this.icon});
 
   factory StatusBadge.success(String text) {
     return StatusBadge(
@@ -32,19 +27,11 @@ class StatusBadge extends StatelessWidget {
   }
 
   factory StatusBadge.error(String text) {
-    return StatusBadge(
-      text: text,
-      color: AppColors.expense,
-      icon: Icons.error,
-    );
+    return StatusBadge(text: text, color: AppColors.expense, icon: Icons.error);
   }
 
   factory StatusBadge.info(String text) {
-    return StatusBadge(
-      text: text,
-      color: AppColors.info,
-      icon: Icons.info,
-    );
+    return StatusBadge(text: text, color: AppColors.info, icon: Icons.info);
   }
 
   @override
@@ -54,10 +41,10 @@ class StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: badgeColor.withOpacity(0.3),
+          color: badgeColor.withAlpha((0.3 * 255).round()),
           width: 1,
         ),
       ),
@@ -65,11 +52,7 @@ class StatusBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              size: 14,
-              color: badgeColor,
-            ),
+            Icon(icon, size: 14, color: badgeColor),
             const SizedBox(width: 4),
           ],
           Text(
@@ -108,10 +91,7 @@ class CounterBadge extends StatelessWidget {
         color: backgroundColor ?? AppColors.expense,
         borderRadius: BorderRadius.circular(10),
       ),
-      constraints: const BoxConstraints(
-        minWidth: 18,
-        minHeight: 18,
-      ),
+      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
       child: Text(
         count > 99 ? '99+' : count.toString(),
         style: context.labelSmallStyle.copyWith(
